@@ -236,24 +236,17 @@ export async function DELETE(req: NextRequest) {
   const user = getUser(req);
   if (!user || user.role !== 'bk') return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
-  
-
   const jurusan = req.nextUrl.searchParams.get('jurusan');
   const kelas = req.nextUrl.searchParams.get('kelas');
 
-if (kelas) {
-  await db.execute(`
-    DELETE a FROM absen a
-    JOIN users u ON a.user_id = u.id
-    WHERE u.role = 'siswa' AND u.kelas = ?
-  `, [kelas]);
-} else if (jurusan) {
-  // yang sudah ada
-} else {
-  // reset semua
-}
   try {
-    if (jurusan) {
+    if (kelas) {
+      await db.execute(`
+        DELETE a FROM absen a
+        JOIN users u ON a.user_id = u.id
+        WHERE u.role = 'siswa' AND u.kelas = ?
+      `, [kelas]);
+    } else if (jurusan) {
       await db.execute(`
         DELETE a FROM absen a
         JOIN users u ON a.user_id = u.id
@@ -270,6 +263,4 @@ if (kelas) {
   } catch (e: any) {
     return NextResponse.json({ message: e.message }, { status: 500 });
   }
-
-  
 }
