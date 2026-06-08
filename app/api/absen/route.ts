@@ -79,7 +79,7 @@ export async function GET(req: NextRequest) {
   const [siswa]: any = await db.execute(`
     SELECT 
       u.id as user_id, u.nama, u.kelas,
-      CASE WHEN u.id = ? THEN a_today.foto ELSE NULL END as foto,
+      a_today.foto,
       a_today.status as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
     const [siswaUpdated]: any = await db.execute(`
       SELECT 
         u.id as user_id, u.nama, u.kelas,
-        CASE WHEN u.id = ? THEN a_today.foto ELSE NULL END as foto,
+        a_today.foto,
         a_today.status as status_hari_ini,
         a_today.created_at as waktu_absen_hari_ini,
         SUM(a.status = 'hadir')  as hadir,
