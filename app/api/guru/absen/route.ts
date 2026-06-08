@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       u.id as user_id,
       u.nama,
       u.kelas,
-      a_today.foto,
+      COALESCE(a_today.foto, (SELECT foto FROM absen WHERE user_id = u.id AND foto IS NOT NULL ORDER BY tanggal DESC LIMIT 1)) as foto,
       a_today.status   as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
