@@ -112,8 +112,11 @@ export async function GET(req: NextRequest) {
   `, [user.id]);
 
   // Auto alpha setelah jam 08:00
-  const now = new Date();
-  const sudahLewatJam8 = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() >= 0);
+  // Auto alpha setelah jam 08:00 WIB
+const nowLocalStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+const now = new Date(nowLocalStr);
+
+const sudahLewatJam8 = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() >= 0);
   if (sudahLewatJam8 && hari_ini.length === 0) {
     const jam8 = new Date();
     jam8.setHours(8, 0, 0, 0);
@@ -172,7 +175,7 @@ export async function POST(req: NextRequest) {
   const user = getUser(req);
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
 
   const [cek]: any = await db.execute(
     'SELECT id FROM absen WHERE user_id = ? AND tanggal = ?',

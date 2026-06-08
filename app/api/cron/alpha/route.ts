@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
 
   // Ambil semua siswa yang belum absen hari ini
   const [siswa]: any = await db.execute(`
