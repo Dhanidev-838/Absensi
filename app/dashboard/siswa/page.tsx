@@ -39,11 +39,11 @@ export default function DashboardSiswa() {
 
   
 function cekWaktu() {
-  const now = new Date();
-  const totalMenit = now.getHours() * 60 + now.getMinutes();
-  const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
-  setBisaAbsen(bisaAbsen);
-  //setBisaAbsen(true); // sementara testing
+  // const now = new Date();
+  // const totalMenit = now.getHours() * 60 + now.getMinutes();
+  // const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
+  // setBisaAbsen(bisaAbsen);
+  setBisaAbsen(true); // sementara testing
 }
 
   async function fetchHistory(t: string) {
