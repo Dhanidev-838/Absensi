@@ -40,15 +40,15 @@ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' 
   `, [today, user.kelas]);
 
   // Fetch foto terakhir untuk siswa yang belum absen hari ini
-  // for (let s of siswa) {
-  //   if (!s.foto) {
-  //     const [latest]: any = await db.execute(
-  //       `SELECT foto FROM absen WHERE user_id = ? AND foto IS NOT NULL ORDER BY tanggal DESC LIMIT 1`,
-  //       [s.user_id]
-  //     );
-  //     if (latest.length > 0) s.foto = latest[0].foto;
-  //   }
-  // }
+  for (let s of siswa) {
+    if (!s.foto) {
+      const [latest]: any = await db.execute(
+        `SELECT foto FROM absen WHERE user_id = ? AND foto IS NOT NULL ORDER BY tanggal DESC LIMIT 1`,
+        [s.user_id]
+      );
+      if (latest.length > 0) s.foto = latest[0].foto;
+    }
+  }
 
   const [rekapTotal]: any = await db.execute(`
     SELECT 
