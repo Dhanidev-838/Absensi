@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import jwt from 'jsonwebtoken';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 function getUser(req: NextRequest) {
   const auth = req.headers.get('authorization');
@@ -183,11 +188,14 @@ export async function POST(req: NextRequest) {
   if (foto) {
     const bytes = await foto.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    namaFoto = `${user.id}_${Date.now()}.jpg`;
-    const filePath = path.join(process.cwd(), 'public', 'uploads', namaFoto);
-    await writeFile(filePath, buffer);
+    const base64 = buffer.toString('base64');
+const dataUri = `data:image/jpeg;base64,${base64}`;
+const uploaded = await cloudinary.uploader.upload(dataUri, {
+  folder: 'absensi',
+  public_id: `${user.id}_${Date.now()}`,
+});
+namaFoto = uploaded.secure_url;
   }
-
   await db.execute(
     'INSERT INTO absen (user_id, tanggal, status, foto) VALUES (?, ?, ?, ?)',
     [user.id, today, status, namaFoto]
@@ -215,13 +223,16 @@ export async function PUT(req: NextRequest) {
   if (foto) {
     const bytes = await foto.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const namaFoto = `${user.id}_${Date.now()}.jpg`;
-    const filePath = path.join(process.cwd(), 'public', 'uploads', namaFoto);
-    await writeFile(filePath, buffer);
-    await db.execute(
-      'UPDATE absen SET foto = ?, status = ? WHERE id = ? AND user_id = ?',
-      [namaFoto, status, id, user.id]
-    );
+    const base64 = buffer.toString('base64');
+const dataUri = `data:image/jpeg;base64,${base64}`;
+const uploaded = await cloudinary.uploader.upload(dataUri, {
+  folder: 'absensi',
+  public_id: `${user.id}_${Date.now()}`,
+});
+await db.execute(
+  'UPDATE absen SET foto = ?, status = ? WHERE id = ? AND user_id = ?',
+  [uploaded.secure_url, status, id, user.id]
+);
   } else {
     await db.execute(
       'UPDATE absen SET status = ? WHERE id = ? AND user_id = ?',

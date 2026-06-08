@@ -346,7 +346,7 @@ function cekWaktu() {
       <td style={{ padding: '12px 10px', fontSize: '13px', color: '#111', textAlign: 'center', fontWeight: '500' }}>{item.nama}</td>
       <td style={{ padding: '12px 10px', textAlign: 'center' }}>
         {item.foto ? (
-          <img src={`/uploads/${item.foto}`} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto', display: 'block' }} />
+          <img src={item.foto} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto', display: 'block' }} />
         ) : (
           <span style={{ fontSize: '12px', color: '#999' }}>-</span>
         )}
