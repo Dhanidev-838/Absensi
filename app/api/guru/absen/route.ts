@@ -22,12 +22,7 @@ export async function GET(req: NextRequest) {
       u.id as user_id,
       u.nama,
       u.kelas,
-      IFNULL(a_today.foto, (
-        SELECT foto FROM absen 
-        WHERE user_id = u.id AND foto IS NOT NULL 
-        ORDER BY tanggal DESC 
-        LIMIT 1
-      )) as foto,
+      a_today.foto,
       a_today.status   as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
@@ -42,6 +37,17 @@ export async function GET(req: NextRequest) {
     GROUP BY u.id, u.nama, u.kelas, a_today.foto, a_today.status, a_today.created_at
     ORDER BY u.nama
   `, [today, user.kelas]);
+
+  // Fetch foto terakhir untuk siswa yang belum absen hari ini
+  for (let s of siswa) {
+    if (!s.foto) {
+      const [latest]: any = await db.execute(
+        `SELECT foto FROM absen WHERE user_id = ? AND foto IS NOT NULL ORDER BY tanggal DESC LIMIT 1`,
+        [s.user_id]
+      );
+      if (latest.length > 0) s.foto = latest[0].foto;
+    }
+  }
 
   const [rekapTotal]: any = await db.execute(`
     SELECT 
