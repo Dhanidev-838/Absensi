@@ -128,9 +128,8 @@ const now = new Date(nowLocalStr);
 
 const sudahLewatJam8 = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() >= 0);
   if (sudahLewatJam8 && hari_ini.length === 0) {
-    const jam8 = new Date();
-    jam8.setHours(8, 0, 0, 0);
-    const jam8Str = jam8.toISOString().slice(0, 19).replace('T', ' ');
+    // ✅ GANTI DENGAN INI (Jauh lebih aman dan bersih)
+const jam8Str = `${today} 08:00:00`;
     await db.execute(
       `INSERT INTO absen (user_id, tanggal, status, foto, created_at) VALUES (?, ?, 'alpha', NULL, ?)`,
       [user.id, today, jam8Str]
