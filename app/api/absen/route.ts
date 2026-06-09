@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const user = getUser(req);
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
   const tipe = req.nextUrl.searchParams.get('tipe');
 
   // BK: rekap semua siswa
@@ -239,7 +239,7 @@ export async function PUT(req: NextRequest) {
   const user = getUser(req);
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
   const formData = await req.formData();
   const foto = formData.get('foto') as File;
   const status = formData.get('status') as string;
