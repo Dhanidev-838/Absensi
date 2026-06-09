@@ -72,7 +72,17 @@ export async function GET(req: NextRequest) {
       ORDER BY u.nama
     `, [today, user.kelas]);
 
-    return NextResponse.json({ siswa, nama: user.nama, kelas: user.kelas });
+    return NextResponse.json(
+      { siswa, nama: user.nama, kelas: user.kelas }, 
+      { 
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      }
+    );
   }
 
   // Siswa: semua teman sekelas + rekap diri sendiri
@@ -160,15 +170,33 @@ const sudahLewatJam8 = now.getHours() > 8 || (now.getHours() === 8 && now.getMin
       FROM absen WHERE user_id = ?
     `, [user.id]);
 
-    return NextResponse.json({
-      siswa: siswaUpdated, hari_ini: updated,
-      rekap: rekapUpdated[0], nama: user.nama, kelas: user.kelas
-    });
+    return NextResponse.json(
+      {
+        siswa: siswaUpdated, hari_ini: updated,
+        rekap: rekapUpdated[0], nama: user.nama, kelas: user.kelas
+      },
+      { 
+        status: 200,
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      }
+    );
   }
 
-  return NextResponse.json({
-    siswa, hari_ini, rekap: rekapArr[0], nama: user.nama, kelas: user.kelas
-  });
+  return NextResponse.json(
+    { siswa, hari_ini, rekap: rekapArr[0], nama: user.nama, kelas: user.kelas },
+    { 
+      status: 200,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    }
+  );
 }
 
 export async function POST(req: NextRequest) {
