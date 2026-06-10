@@ -23,9 +23,6 @@ export default function Home() {
           <span style={{ fontSize: '16px', fontWeight: '600', color: '#111' }}>Website Absensi</span>
         </div>
 
-        {/* Pilih Role di tengah */}
-        <span style={{ fontSize: '15px', fontWeight: '600', color: '#111', marginLeft: '-70px'}}>Pilih Role</span>
-
         <button onClick={() => setShowAbout(true)} style={{
           background: '#f5f5f5', color: '#111', border: '1px solid #e5e5e5',
           borderRadius: '10px', padding: '8px 20px', fontSize: '13px',
