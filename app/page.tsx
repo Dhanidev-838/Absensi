@@ -142,7 +142,8 @@ export default function Home() {
               <p style={{ fontSize: '12px', fontWeight: '700', color: '#fd1d00', letterSpacing: '0.1em', marginBottom: '8px' }}>TENTANG SISTEM</p>
               <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#111', marginBottom: '16px', lineHeight: 1.3 }}>Apa itu Absensi Digital?</h2>
               <p style={{ fontSize: '14px', color: '#555', lineHeight: '1.8' }}>
-                Sistem pencatatan kehadiran berbasis web yang menggantikan absensi manual. Siswa absen mandiri lewat foto selfie, data tercatat real-time dan bisa dipantau kapan saja oleh guru, BK, maupun admin sekolah.
+                Absensi Digital adalah sistem pencatatan kehadiran berbasis web yang menggantikan absensi manual dengan teknologi modern. Sistem ini memungkinkan siswa melakukan absensi secara mandiri melalui perangkat masing-masing dengan verifikasi foto selfie, sehingga proses pencatatan kehadiran menjadi lebih efisien, akurat, dan transparan.
+Dengan absensi digital, data kehadiran tercatat secara otomatis dan real-time, dapat diakses kapan saja oleh guru, BK, maupun admin sekolah. Sistem ini juga dilengkapi fitur laporan, rekap kehadiran, dan notifikasi otomatis untuk siswa yang tidak hadir, sehingga memudahkan pihak sekolah dalam memantau dan mengelola kehadiran siswa secara menyeluruh.
               </p>
             </div>
             <div style={{
