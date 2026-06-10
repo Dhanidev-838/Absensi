@@ -137,7 +137,7 @@ export default function Home() {
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '64px' }}>
 
           {/* Apa itu Absensi Digital */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
               <p style={{ fontSize: '12px', fontWeight: '700', color: '#fd1d00', letterSpacing: '0.1em', marginBottom: '8px' }}>TENTANG SISTEM</p>
               <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#111', marginBottom: '16px', lineHeight: 1.3 }}>Apa itu Absensi Digital?</h2>
@@ -196,7 +196,7 @@ Dengan absensi digital, data kehadiran tercatat secara otomatis dan real-time, d
           <div>
             <p style={{ fontSize: '12px', fontWeight: '700', color: '#fd1d00', letterSpacing: '0.1em', marginBottom: '8px' }}>CARA KERJA</p>
             <h2 style={{ fontSize: '24px', fontWeight: '700', color: '#111', marginBottom: '32px' }}>Alur Penggunaan</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
               {[
                 { step: '01', icon: '🔐', label: 'Login', desc: 'Masuk sesuai peran — Siswa, Guru, BK, atau Admin' },
                 { step: '02', icon: '📸', label: 'Isi Status', desc: 'Siswa mengisi absen harian dengan foto selfie' },
