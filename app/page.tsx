@@ -129,7 +129,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <img src="/uploads/logo-sekolah.png" alt="Logo Sekolah" style={{ width: '160px', height: '160px', objectFit: 'contain' }} />
+          <img src="/uploads/Citra-Negara.png" alt="Logo Sekolah" style={{ width: '160px', height: '160px', objectFit: 'contain' }} />
         </div>
       </section>
 
