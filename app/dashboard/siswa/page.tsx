@@ -89,6 +89,7 @@ function cekWaktu() {
     const formData = new FormData();
     formData.append('foto', file);
     formData.append('status', kategori);
+    formData.append('alasan', alasan);
     const res = await fetch('/api/absen', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
@@ -293,6 +294,7 @@ function cekWaktu() {
         <thead>
           <tr style={{ background: '#fd1d00' }}>
             {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+              
               <th key={h} style={{
                 padding: '12px 10px', fontSize: '12px', fontWeight: '600',
                 color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
@@ -313,6 +315,12 @@ function cekWaktu() {
           <span style={{ fontSize: '12px', color: '#999' }}>-</span>
         )}
       </td>
+      {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+  <th key={h} style={{
+    padding: '12px 10px', fontSize: '12px', fontWeight: '600',
+    color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
+  }}>{h}</th>
+))}
       <td style={{ padding: '12px 10px', textAlign: 'center' }}>
         <span style={{
           background: (statusColor[item.status_hari_ini || ''] || '#888') + '20',
@@ -343,6 +351,34 @@ function cekWaktu() {
       }}>
         2026 · NamaSekolah@gmail.com · Website Resmi Sekolah
       </footer>
+
+      {showAlasanPopup && alasanPopupItem && (
+  <div style={{
+    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    zIndex: 200, padding: '24px'
+  }} onClick={() => setShowAlasanPopup(false)}>
+    <div style={{
+      background: '#fff', borderRadius: '20px', padding: '24px',
+      width: '100%', maxWidth: '400px'
+    }} onClick={e => e.stopPropagation()}>
+      <p style={{ fontWeight: '600', fontSize: '15px', color: '#111', marginBottom: '8px' }}>
+        Alasan — {alasanPopupItem.nama}
+      </p>
+      <p style={{ fontSize: '13px', color: '#555' }}>
+        Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong>
+      </p>
+      <p style={{ fontSize: '13px', color: '#333', marginTop: '12px', lineHeight: '1.6' }}>
+        {alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}
+      </p>
+      <button onClick={() => setShowAlasanPopup(false)} style={{
+        marginTop: '16px', width: '100%', background: '#f5f5f5', border: 'none',
+        borderRadius: '10px', padding: '10px', fontSize: '13px', cursor: 'pointer', color: '#555'
+      }}>Tutup</button>
+    </div>
+  </div>
+)}
+
     </main>
   );
 }
