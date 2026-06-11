@@ -125,7 +125,7 @@ export default function DashboardGuru() {
   }
 
   const statusColor: Record<string, string> = {
-    hadir: '#16a34a', izin: '#d97706', sakit: '#2563eb',
+    hadir: '#000000', izin: '#000000', sakit: '#000000',
     alpha: '#dc2626',
   };
 
@@ -196,9 +196,9 @@ export default function DashboardGuru() {
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
-            { label: 'Hadir',  val: rekapTotal.hadir,  color: '#16a34a' },
-            { label: 'Izin',   val: rekapTotal.izin,   color: '#d97706' },
-            { label: 'Sakit',  val: rekapTotal.sakit,  color: '#2563eb' },
+            { label: 'Hadir',  val: rekapTotal.hadir,  color: 'rgb(0, 0, 0)' },
+            { label: 'Izin',   val: rekapTotal.izin,   color: '#000000' },
+            { label: 'Sakit',  val: rekapTotal.sakit,  color: '#000000' },
             { label: 'Alpha',  val: rekapTotal.alpha,  color: '#dc2626' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{
@@ -250,9 +250,9 @@ export default function DashboardGuru() {
                   padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600'
                 }}>{item.status_hari_ini?.toUpperCase() || 'BELUM'}</span>
               </td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
+              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
+              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
+              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
               <td style={{ padding: '12px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
             </tr>
           ))}
@@ -270,9 +270,9 @@ export default function DashboardGuru() {
             {msg && (
               <div style={{
                 background: msg.includes('berhasil') ? '#f0fdf4' : '#fff0ef',
-                border: `1px solid ${msg.includes('berhasil') ? '#16a34a' : '#fd1d00'}`,
+                border: `1px solid ${msg.includes('berhasil') ? '#000000' : '#fd1d00'}`,
                 borderRadius: '10px', padding: '10px 12px', fontSize: '13px',
-                color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00'
+                color: msg.includes('berhasil') ? '#000000' : '#fd1d00'
               }}>{msg}</div>
             )}
 
@@ -316,7 +316,7 @@ export default function DashboardGuru() {
                   <div style={{ textAlign: 'right', minWidth: '130px' }}>
                     <span style={{
                       background: l.status === 'diproses' ? '#f0fdf4' : l.status === 'ditolak' ? '#fff0ef' : '#f5f5f5',
-                      color: l.status === 'diproses' ? '#16a34a' : l.status === 'ditolak' ? '#fd1d00' : '#888',
+                      color: l.status === 'diproses' ? '#000000' : l.status === 'ditolak' ? '#fd1d00' : '#888',
                       padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', display: 'block', marginBottom: '4px'
                     }}>{l.status}</span>
                     <p style={{ fontSize: '11px', color: '#bbb' }}>
@@ -362,7 +362,7 @@ export default function DashboardGuru() {
               <div style={{ textAlign: 'right' }}>
                 <span style={{
                   background: selectedLaporan.status === 'diproses' ? '#f0fdf4' : '#f5f5f5',
-                  color: selectedLaporan.status === 'diproses' ? '#16a34a' : '#888',
+                  color: selectedLaporan.status === 'diproses' ? '#000000' : '#888',
                   padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', display: 'block'
                 }}>{selectedLaporan.status}</span>
                 <p style={{ fontSize: '11px', color: '#bbb', marginTop: '4px' }}>
