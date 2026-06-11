@@ -35,7 +35,6 @@ export async function GET(req: NextRequest) {
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
-        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha,
         MIN(a.tanggal) as mulai_dari,
         MAX(a.tanggal) as terakhir
@@ -62,7 +61,6 @@ export async function GET(req: NextRequest) {
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
-        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha
       FROM users u
       LEFT JOIN absen a ON a.user_id = u.id
@@ -95,7 +93,6 @@ export async function GET(req: NextRequest) {
       SUM(a.status = 'hadir')  as hadir,
       SUM(a.status = 'izin')   as izin,
       SUM(a.status = 'sakit')  as sakit,
-      SUM(a.status = 'dispen') as dispen,
       SUM(a.status = 'alpha')  as alpha
     FROM users u
     LEFT JOIN absen a ON a.user_id = u.id
@@ -115,7 +112,6 @@ export async function GET(req: NextRequest) {
       SUM(status = 'hadir')  as hadir,
       SUM(status = 'izin')   as izin,
       SUM(status = 'sakit')  as sakit,
-      SUM(status = 'dispen') as dispen,
       SUM(status = 'alpha')  as alpha,
       MIN(tanggal) as mulai_dari
     FROM absen WHERE user_id = ?
@@ -148,7 +144,6 @@ const jam8Str = `${today} 08:00:00`;
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
-        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha
       FROM users u
       LEFT JOIN absen a ON a.user_id = u.id
@@ -163,7 +158,6 @@ const jam8Str = `${today} 08:00:00`;
         SUM(status = 'hadir')  as hadir,
         SUM(status = 'izin')   as izin,
         SUM(status = 'sakit')  as sakit,
-        SUM(status = 'dispen') as dispen,
         SUM(status = 'alpha')  as alpha,
         MIN(tanggal) as mulai_dari
       FROM absen WHERE user_id = ?

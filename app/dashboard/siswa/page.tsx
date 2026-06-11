@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 export default function DashboardSiswa() {
   const router = useRouter();
   const [tab, setTab] = useState<'absen' | 'sekarang'>('absen');
-  const [kategori, setKategori] = useState<'hadir' | 'dispen' | 'izin' | 'sakit'>('hadir');
+  const [kategori, setKategori] = useState<'hadir' | 'izin' | 'sakit'>('hadir');
   const [showKategori, setShowKategori] = useState(false);
   const [foto, setFoto] = useState<string | null>(null);
   const [fotoFile, setFotoFile] = useState<File | null>(null);
@@ -25,7 +25,7 @@ export default function DashboardSiswa() {
   const [kameraUpdateAktif, setKameraUpdateAktif] = useState(false);
   const videoUpdateRef = useRef<HTMLVideoElement>(null);
   const streamUpdateRef = useRef<MediaStream | null>(null);
-  const [kategoriUpdate, setKategoriUpdate] = useState<'hadir' | 'dispen' | 'izin' | 'sakit'>('hadir');
+  const [kategoriUpdate, setKategoriUpdate] = useState<'hadir' | 'izin' | 'sakit'>('hadir');
   const [showKategoriUpdate, setShowKategoriUpdate] = useState(false);
   const [rekap, setRekap] = useState<any>(null);
   const [siswaList, setSiswaList] = useState<any[]>([]);
@@ -162,7 +162,7 @@ function cekWaktu() {
 
   const statusColor: Record<string, string> = {
     hadir: '#16a34a', izin: '#d97706', sakit: '#2563eb',
-    alpha: '#dc2626', dispen: '#7e22ce',
+    alpha: '#dc2626',
   };
 
   return (
@@ -248,7 +248,7 @@ function cekWaktu() {
                         zIndex: 10, marginTop: '4px', width: '100%',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                       }}>
-                        {['hadir', 'dispen', 'izin', 'sakit'].map(k => (
+                        {['hadir', 'izin', 'sakit'].map(k => (
                           <button key={k} onClick={() => { setKategori(k as any); setShowKategori(false); }} style={{
                             display: 'block', width: '100%', padding: '10px 16px',
                             fontSize: '13px', border: 'none',
@@ -311,7 +311,7 @@ function cekWaktu() {
             { label: 'Hadir',  val: rekap.hadir,  color: '#16a34a' },
             { label: 'Izin',   val: rekap.izin,   color: '#d97706' },
             { label: 'Sakit',  val: rekap.sakit,  color: '#2563eb' },
-            { label: 'Dispen', val: rekap.dispen, color: '#7e22ce' },
+
             { label: 'Alpha',  val: rekap.alpha,  color: '#dc2626' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{
@@ -330,7 +330,7 @@ function cekWaktu() {
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
         <thead>
           <tr style={{ background: '#fd1d00' }}>
-            {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha'].map(h => (
+            {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
               <th key={h} style={{
                 padding: '12px 10px', fontSize: '12px', fontWeight: '600',
                 color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
@@ -361,7 +361,6 @@ function cekWaktu() {
       <td style={{ padding: '12px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
       <td style={{ padding: '12px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
       <td style={{ padding: '12px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#7e22ce', fontWeight: '700', fontSize: '14px' }}>{item.dispen || 0}</td>
       <td style={{ padding: '12px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
     </tr>
   ))}
@@ -403,7 +402,7 @@ function cekWaktu() {
                           zIndex: 10, marginTop: '4px', width: '100%',
                           boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                         }}>
-                          {['hadir', 'dispen', 'izin', 'sakit'].map(k => (
+                          {['hadir', 'izin', 'sakit'].map(k => (
                             <button key={k} onClick={() => { setKategoriUpdate(k as any); setShowKategoriUpdate(false); }} style={{
                               display: 'block', width: '100%', padding: '10px 16px',
                               fontSize: '13px', border: 'none',

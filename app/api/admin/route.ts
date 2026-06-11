@@ -52,7 +52,6 @@ if (role === 'grafik') {
       SUM(status = 'hadir')  as hadir,
       SUM(status = 'izin')   as izin,
       SUM(status = 'sakit')  as sakit,
-      SUM(status = 'dispen') as dispen,
       SUM(status = 'alpha')  as alpha
     FROM absen
     WHERE tanggal = ?

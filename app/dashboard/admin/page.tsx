@@ -17,7 +17,6 @@ type Grafik = {
   hadir: number;
   izin: number;
   sakit: number;
-  dispen: number;
   alpha: number;
 };
 
@@ -225,7 +224,6 @@ export default function DashboardAdmin() {
     { name: 'Hadir',  jumlah: Number(grafik.hadir),  fill: '#16a34a' },
     { name: 'Izin',   jumlah: Number(grafik.izin),   fill: '#d97706' },
     { name: 'Sakit',  jumlah: Number(grafik.sakit),  fill: '#2563eb' },
-    { name: 'Dispen', jumlah: Number(grafik.dispen), fill: '#7e22ce' },
     { name: 'Alpha',  jumlah: Number(grafik.alpha),  fill: '#dc2626' },
   ] : [];
 

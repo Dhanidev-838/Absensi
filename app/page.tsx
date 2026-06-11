@@ -78,7 +78,7 @@ export default function Home() {
             {[
               { role: 'siswa', icon: '👤', label: 'Siswa', desc: 'Login atau daftar akun baru' },
               { role: 'guru', icon: '🏫', label: 'Guru / Walas', desc: 'Kelola absen & laporan kelas' },
-              { role: 'bk', icon: '🏢', label: 'BK / Kesiswaan', desc: 'Proses laporan & dispensasi' },
+              { role: 'bk', icon: '🏢', label: 'BK / Kesiswaan', desc: 'Proses laporan & cetak excel' },
               { role: 'admin', icon: '⚙️', label: 'Admin', desc: 'Kelola akun guru & BK' },
             ].map(({ role, icon, label, desc }) => (
               <div key={role} style={{

@@ -6,7 +6,7 @@ import { Suspense, useState } from 'react';
 const roleConfig: Record<string, { label: string; desc: string; icon: string }> = {
   siswa:  { label: 'Siswa',          desc: 'Login atau daftar akun baru',   icon: '👤' },
   guru:   { label: 'Guru / Walas',   desc: 'Kelola absen & laporan kelas',  icon: '🏫' },
-  bk:     { label: 'BK / Kesiswaan', desc: 'Proses laporan & dispensasi',   icon: '🏢' },
+  bk:     { label: 'BK / Kesiswaan', desc: 'Proses laporan & cetak excel',   icon: '🏢' },
   admin:  { label: 'Admin',          desc: 'Kelola akun guru & BK',         icon: '⚙️' },
 };
 

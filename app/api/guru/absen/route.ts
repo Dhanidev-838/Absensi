@@ -29,7 +29,6 @@ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' 
       SUM(a.status = 'hadir')  as hadir,
       SUM(a.status = 'izin')   as izin,
       SUM(a.status = 'sakit')  as sakit,
-      SUM(a.status = 'dispen') as dispen,
       SUM(a.status = 'alpha')  as alpha
     FROM users u
     LEFT JOIN absen a       ON a.user_id = u.id
@@ -44,7 +43,6 @@ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' 
       SUM(a.status = 'hadir')  as hadir,
       SUM(a.status = 'izin')   as izin,
       SUM(a.status = 'sakit')  as sakit,
-      SUM(a.status = 'dispen') as dispen,
       SUM(a.status = 'alpha')  as alpha,
       MIN(a.tanggal) as mulai_dari
     FROM absen a

@@ -9,7 +9,6 @@ type SiswaRekap = {
   hadir: number;
   izin: number;
   sakit: number;
-  dispen: number;
   alpha: number;
   mulai_dari: string | null;
   terakhir: string | null;
@@ -66,15 +65,14 @@ function JejakHistory({ token, isBK = false }: { token: string; isBK?: boolean }
     kelasByNama[r.nama] = r.kelas;
   });
 
-  const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha'];
+  const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Alpha'];
   const csvRows = Object.entries(groupedData).map(([nama, statusMap]) => {
     const statuses = tanggalList.map(t => statusMap[t] || '-');
     const hadir  = statuses.filter(s => s === 'hadir').length;
     const izin   = statuses.filter(s => s === 'izin').length;
     const sakit  = statuses.filter(s => s === 'sakit').length;
-    const dispen = statuses.filter(s => s === 'dispen').length;
     const alpha  = statuses.filter(s => s === 'alpha').length;
-    return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, dispen, alpha].join(',');
+    return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, alpha].join(',');
   });
 
   const csvContent = [header.join(','), ...csvRows].join('\n');
@@ -326,15 +324,14 @@ export default function DashboardBK() {
       kelasByNama[r.nama] = r.kelas;
     });
 
-    const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha'];
+    const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Alpha'];
     const csvRows = Object.entries(grouped).map(([nama, statusMap]) => {
       const statuses = tanggalList.map(t => statusMap[t] || '-');
       const hadir = statuses.filter(s => s === 'hadir').length;
       const izin = statuses.filter(s => s === 'izin').length;
       const sakit = statuses.filter(s => s === 'sakit').length;
-      const dispen = statuses.filter(s => s === 'dispen').length;
       const alpha = statuses.filter(s => s === 'alpha').length;
-      return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, dispen, alpha].join(',');
+      return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, alpha].join(',');
     });
 
     const csvContent = [header.join(','), ...csvRows].join('\n');
@@ -374,15 +371,14 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
     kelasByNama[r.nama] = r.kelas;
   });
 
-  const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha'];
+  const header = ['Nama', 'Kelas', ...tanggalList, 'Hadir', 'Izin', 'Sakit', 'Alpha'];
   const csvRows = Object.entries(groupedData).map(([nama, statusMap]) => {
     const statuses = tanggalList.map(t => statusMap[t] || '-');
     const hadir = statuses.filter(s => s === 'hadir').length;
     const izin = statuses.filter(s => s === 'izin').length;
     const sakit = statuses.filter(s => s === 'sakit').length;
-    const dispen = statuses.filter(s => s === 'dispen').length;
     const alpha = statuses.filter(s => s === 'alpha').length;
-    return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, dispen, alpha].join(',');
+    return [nama, kelasByNama[nama], ...statuses, hadir, izin, sakit, alpha].join(',');
   });
 
   const csvContent = [header.join(','), ...csvRows].join('\n');
@@ -522,7 +518,6 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
             { label: 'Hadir',  val: siswaKelas.reduce((a, s) => a + Number(s.hadir || 0), 0),  color: '#16a34a' },
             { label: 'Izin',   val: siswaKelas.reduce((a, s) => a + Number(s.izin || 0), 0),   color: '#d97706' },
             { label: 'Sakit',  val: siswaKelas.reduce((a, s) => a + Number(s.sakit || 0), 0),  color: '#2563eb' },
-            { label: 'Dispen', val: siswaKelas.reduce((a, s) => a + Number(s.dispen || 0), 0), color: '#7e22ce' },
             { label: 'Alpha',  val: siswaKelas.reduce((a, s) => a + Number(s.alpha || 0), 0),  color: '#dc2626' },
           ].map(({ label: lbl, val, color: c }) => (
             <div key={lbl} style={{ background: c + '15', border: `1px solid ${c}30`, borderRadius: '8px', padding: '4px 10px', textAlign: 'center', minWidth: '45px' }}>
@@ -632,7 +627,7 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
               <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
                 <thead>
                   <tr style={{ background: popupJurusan.color }}>
-                    {['Kelas', '', 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha', 'Aksi'].map(h => (
+                    {['Kelas', '', 'Hadir', 'Izin', 'Sakit', 'Alpha', 'Aksi'].map(h => (
   <th key={h} style={{ padding: '10px 12px', fontSize: '12px', fontWeight: '600', color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)' }}>{h}</th>
 ))}
                   </tr>
@@ -648,7 +643,6 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
       const totalHadir  = siswaKelas.reduce((a, s) => a + Number(s.hadir || 0), 0);
       const totalIzin   = siswaKelas.reduce((a, s) => a + Number(s.izin || 0), 0);
       const totalSakit  = siswaKelas.reduce((a, s) => a + Number(s.sakit || 0), 0);
-      const totalDispen = siswaKelas.reduce((a, s) => a + Number(s.dispen || 0), 0);
       const totalAlpha  = siswaKelas.reduce((a, s) => a + Number(s.alpha || 0), 0);
       return (
         <tr key={kelas} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
@@ -656,7 +650,6 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
           <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700' }}>{totalHadir}</td>
           <td style={{ padding: '10px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700' }}>{totalIzin}</td>
           <td style={{ padding: '10px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700' }}>{totalSakit}</td>
-          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#7e22ce', fontWeight: '700' }}>{totalDispen}</td>
           <td style={{ padding: '10px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700' }}>{totalAlpha}</td>
           <td style={{ padding: '6px 8px', textAlign: 'center' }}>
             <button onClick={() => cetakExcelKelas(kelas, popupJurusan!.jurusan)} style={{
@@ -751,7 +744,7 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
           <thead>
             <tr style={{ background: popupKelas.color }}>
-              {['Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Dispen', 'Alpha'].map(h => (
+              {['Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
                 <th key={h} style={{ padding: '10px 12px', fontSize: '12px', fontWeight: '600', color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)' }}>{h}</th>
               ))}
             </tr>
@@ -765,7 +758,6 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700' }}>{s.hadir || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700' }}>{s.izin || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700' }}>{s.sakit || 0}</td>
-                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#7e22ce', fontWeight: '700' }}>{s.dispen || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700' }}>{s.alpha || 0}</td>
               </tr>
             ))}
