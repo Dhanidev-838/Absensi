@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
       SELECT 
         u.id as user_id, u.nama, u.kelas,
         a_today.foto,
+        a_today.alasan as alasan_hari_ini,
         a_today.status as status_hari_ini,
         a_today.created_at as waktu_absen_hari_ini,
         SUM(a.status = 'hadir')  as hadir,
@@ -88,6 +89,7 @@ export async function GET(req: NextRequest) {
     SELECT 
       u.id as user_id, u.nama, u.kelas,
       a_today.foto,
+      a_today.alasan as alasan_hari_ini,
       a_today.status as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
@@ -139,6 +141,7 @@ const jam8Str = `${today} 08:00:00`;
       SELECT 
         u.id as user_id, u.nama, u.kelas,
         a_today.foto,
+        a_today.alasan as alasan_hari_ini,
         a_today.status as status_hari_ini,
         a_today.created_at as waktu_absen_hari_ini,
         SUM(a.status = 'hadir')  as hadir,
@@ -206,7 +209,8 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const foto = formData.get('foto') as File;
-  const status = formData.get('status') as string || 'hadir';
+const status = formData.get('status') as string || 'hadir';
+const alasan = formData.get('alasan') as string || null;
 
   let namaFoto = null;
   if (foto) {
@@ -221,8 +225,8 @@ const uploaded = await cloudinary.uploader.upload(dataUri, {
 namaFoto = uploaded.secure_url;
   }
   await db.execute(
-    'INSERT INTO absen (user_id, tanggal, status, foto) VALUES (?, ?, ?, ?)',
-    [user.id, today, status, namaFoto]
+    'INSERT INTO absen (user_id, tanggal, status, foto, alasan) VALUES (?, ?, ?, ?, ?)',
+    [user.id, today, status, namaFoto, alasan]
   );
 
   return NextResponse.json({ message: 'Absen berhasil' });
