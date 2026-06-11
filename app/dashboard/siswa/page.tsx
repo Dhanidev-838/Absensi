@@ -23,6 +23,9 @@ export default function DashboardSiswa() {
   const [token, setToken] = useState('');
   const [rekap, setRekap] = useState<any>(null);
   const [siswaList, setSiswaList] = useState<any[]>([]);
+  const [alasan, setAlasan] = useState('');
+  const [showAlasanPopup, setShowAlasanPopup] = useState(false);
+  const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
 
   useEffect(() => {
     const t = localStorage.getItem('token') || '';
@@ -155,94 +158,108 @@ function cekWaktu() {
       <div style={{ padding: '24px', maxWidth: '700px', margin: '0 auto', width: '100%', flex: 1 }}>
 
         {tab === 'absen' && (
-          <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #e5e5e5', padding: '24px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>Isi Absen Hari Ini</h2>
-            <p style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>Batas Absen dari jam 06:00 sampai 08:00</p>
+  <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #e5e5e5', padding: '24px' }}>
+    <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>Isi Absen Hari Ini</h2>
+    <p style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>Batas Absen dari jam 06:00 sampai 08:00</p>
 
-            {!bisaAbsen ? (
-              <div style={{
-                background: '#fff0ef', border: '1px solid #fd1d00',
-                borderRadius: '10px', padding: '12px 16px', color: '#fd1d00', fontSize: '14px'
-              }}>⏰ Waktu absen sudah habis (06:00 - 08:00)</div>
-            ) : (
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '130px' }}>
-                  <button onClick={kameraAktif ? ambilFoto : bukakamera} style={{
-                    background: '#fd1d00', color: '#fff', border: 'none',
-                    borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                    fontWeight: '600', cursor: 'pointer', textAlign: 'left'
-                  }}>{kameraAktif ? '📸 Ambil Foto' : '📷 Isi Absen'}</button>
+    {!bisaAbsen ? (
+      <div style={{ background: '#fff0ef', border: '1px solid #fd1d00', borderRadius: '10px', padding: '12px 16px', color: '#fd1d00', fontSize: '14px' }}>
+        ⏰ Waktu absen sudah habis (06:00 - 08:00)
+      </div>
+    ) : (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-                  {kameraAktif && (
-                    <button onClick={tutupKamera} style={{
-                      background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
-                      borderRadius: '10px', padding: '8px 16px', fontSize: '13px',
-                      cursor: 'pointer', textAlign: 'left'
-                    }}>✕ Tutup</button>
-                  )}
+        {/* Preview kamera / foto */}
+        <div style={{
+          border: '1px solid #e5e5e5', borderRadius: '12px',
+          overflow: 'hidden', height: '260px', background: '#f5f5f5',
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          {kameraAktif ? (
+            <video ref={videoRef} autoPlay playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : foto ? (
+            <img src={foto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <p style={{ color: '#ccc', fontSize: '13px' }}>Preview kamera</p>
+          )}
+        </div>
 
-                  <div style={{ position: 'relative' }}>
-                    <button onClick={() => setShowKategori(!showKategori)} style={{
-                      background: '#fd1d00', color: '#fff', border: 'none',
-                      borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                      fontWeight: '600', cursor: 'pointer', width: '100%', textAlign: 'left'
-                    }}>Kategory ▾</button>
-                    {showKategori && (
-                      <div style={{
-                        position: 'absolute', top: '100%', left: 0, background: '#fff',
-                        border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden',
-                        zIndex: 10, marginTop: '4px', width: '100%',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-                      }}>
-                        {['hadir', 'izin', 'sakit'].map(k => (
-                          <button key={k} onClick={() => { setKategori(k as any); setShowKategori(false); }} style={{
-                            display: 'block', width: '100%', padding: '10px 16px',
-                            fontSize: '13px', border: 'none',
-                            background: kategori === k ? '#f5f5f5' : '#fff',
-                            cursor: 'pointer', textAlign: 'left',
-                          }}>{k.charAt(0).toUpperCase() + k.slice(1)}</button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+        {/* Tombol kamera */}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={kameraAktif ? ambilFoto : bukakamera} style={{
+            flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
+            borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
+            fontWeight: '600', cursor: 'pointer'
+          }}>{kameraAktif ? '📸 Ambil Foto' : '📷 Buka Kamera'}</button>
 
-                  <span style={{
-  fontSize: '12px', fontWeight: '600',
-  background: kategori === 'hadir' ? '#f0fdf4' : '#faf5ff',
-  color: kategori === 'hadir' ? '#000000' : '#000000',
-  padding: '4px 10px', borderRadius: '20px', textAlign: 'center'
-}}>{kategori.toUpperCase()}</span>
-                </div>
+          {kameraAktif && (
+            <button onClick={tutupKamera} style={{
+              background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
+              borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer'
+            }}>✕ Tutup</button>
+          )}
+        </div>
 
+        {/* Setelah foto ada: muncul kategori + alasan + kirim */}
+        {foto && !kameraAktif && (
+          <>
+            {/* Dropdown Kategori */}
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setShowKategori(!showKategori)} style={{
+                width: '100%', background: '#fd1d00', color: '#fff', border: 'none',
+                borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
+                fontWeight: '600', cursor: 'pointer', textAlign: 'left'
+              }}>Kategori: {kategori.charAt(0).toUpperCase() + kategori.slice(1)} ▾</button>
+              {showKategori && (
                 <div style={{
-                  flex: 1, border: '1px solid #e5e5e5', borderRadius: '12px',
-                  overflow: 'hidden', minHeight: '220px', background: '#f5f5f5',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
+                  border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden',
+                  zIndex: 10, marginTop: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                 }}>
-                  {kameraAktif ? (
-                    <video ref={videoRef} autoPlay playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : foto ? (
-                    <img src={foto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <p style={{ color: '#ccc', fontSize: '13px' }}>Preview kamera</p>
-                  )}
+                  {['hadir', 'izin', 'sakit'].map(k => (
+                    <button key={k} onClick={() => { setKategori(k as any); setShowKategori(false); }} style={{
+                      display: 'block', width: '100%', padding: '10px 16px',
+                      fontSize: '13px', border: 'none',
+                      background: kategori === k ? '#f5f5f5' : '#fff',
+                      cursor: 'pointer', textAlign: 'left',
+                    }}>{k.charAt(0).toUpperCase() + k.slice(1)}</button>
+                  ))}
                 </div>
-              </div>
+              )}
+            </div>
+
+            {/* Textarea alasan kalau izin/sakit */}
+            {(kategori === 'izin' || kategori === 'sakit') && (
+              <textarea
+                placeholder={`Tulis alasan ${kategori}...`}
+                value={alasan}
+                onChange={e => setAlasan(e.target.value)}
+                rows={3}
+                style={{
+                  border: '1px solid #e5e5e5', borderRadius: '10px',
+                  padding: '10px 14px', fontSize: '13px', outline: 'none',
+                  width: '100%', resize: 'vertical', boxSizing: 'border-box'
+                }}
+              />
             )}
 
-            {msg && (
-              <p style={{ fontSize: '13px', marginTop: '12px', color: msg.includes('berhasil') ? '#000000' : '#000000' }}>{msg}</p>
-            )}
-
-            {foto && !kameraAktif && bisaAbsen && (
-              <button onClick={handleAbsen} disabled={loading} style={{
-                background: '#fd1d00', color: '#fff', border: 'none',
-                borderRadius: '10px', padding: '12px', fontSize: '14px',
-                fontWeight: '600', cursor: 'pointer', width: '100%', marginTop: '16px'
-              }}>{loading ? 'Mengirim...' : 'Kirim Absen'}</button>
-            )}
-          </div>
+            {/* Kirim Absen */}
+            <button onClick={handleAbsen} disabled={loading} style={{
+              background: '#fd1d00', color: '#fff', border: 'none',
+              borderRadius: '10px', padding: '12px', fontSize: '14px',
+              fontWeight: '600', cursor: 'pointer', width: '100%'
+            }}>{loading ? 'Mengirim...' : 'Kirim Absen'}</button>
+          </>
         )}
+
+        {msg && (
+          <p style={{ fontSize: '13px', color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00' }}>{msg}</p>
+        )}
+
+      </div>
+    )}
+  </div>
+)}
 
         {tab === 'sekarang' && (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
