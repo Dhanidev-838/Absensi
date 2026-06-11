@@ -21,12 +21,6 @@ export default function DashboardSiswa() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [token, setToken] = useState('');
-  const [fotoUpdate, setFotoUpdate] = useState<string | null>(null);
-  const [kameraUpdateAktif, setKameraUpdateAktif] = useState(false);
-  const videoUpdateRef = useRef<HTMLVideoElement>(null);
-  const streamUpdateRef = useRef<MediaStream | null>(null);
-  const [kategoriUpdate, setKategoriUpdate] = useState<'hadir' | 'izin' | 'sakit'>('hadir');
-  const [showKategoriUpdate, setShowKategoriUpdate] = useState(false);
   const [rekap, setRekap] = useState<any>(null);
   const [siswaList, setSiswaList] = useState<any[]>([]);
 
@@ -106,54 +100,6 @@ function cekWaktu() {
     setTab('sekarang');
   }
 
-  async function handleEditFoto(id: number) {
-    if (!fotoFile) return setMsg('Ambil foto dulu');
-    setLoading(true);
-    setMsg('');
-    const formData = new FormData();
-    formData.append('foto', fotoFile);
-    formData.append('id', String(id));
-    formData.append('status', kategoriUpdate);
-    const res = await fetch('/api/absen', {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (!res.ok) return setMsg(data.message || 'Gagal update foto');
-    setMsg('Foto berhasil diupdate!');
-    setFotoUpdate(null);
-    setFotoFile(null);
-    setKategoriUpdate('hadir');
-    fetchHistory(token);
-  }
-
-  async function bukaKameraUpdate() {
-    setKameraUpdateAktif(true);
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-    streamUpdateRef.current = stream;
-    if (videoUpdateRef.current) videoUpdateRef.current.srcObject = stream;
-  }
-
-  function tutupKameraUpdate() {
-    streamUpdateRef.current?.getTracks().forEach(t => t.stop());
-    setKameraUpdateAktif(false);
-  }
-
-  function ambilFotoUpdate() {
-    const video = videoUpdateRef.current;
-    if (!video) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext('2d')?.drawImage(video, 0, 0);
-    canvas.toBlob((blob) => {
-      if (blob) setFotoFile(new File([blob], 'update.jpg', { type: 'image/jpeg' }));
-    }, 'image/jpeg');
-    setFotoUpdate(canvas.toDataURL('image/jpeg'));
-    tutupKameraUpdate();
-  }
 
   async function handleLogout() {
     localStorage.removeItem('token');
@@ -368,90 +314,9 @@ function cekWaktu() {
       </table>
     </div>
 
-            {bisaAbsen && historySekarang.length > 0 && (
-              <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #e5e5e5', padding: '24px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>Update Foto Selfie</h2>
-                <p style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>Ganti foto absen Anda hari ini</p>
 
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '130px' }}>
-                    <button onClick={kameraUpdateAktif ? ambilFotoUpdate : bukaKameraUpdate} style={{
-                      background: '#fd1d00', color: '#fff', border: 'none',
-                      borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                      fontWeight: '600', cursor: 'pointer', textAlign: 'left'
-                    }}>{kameraUpdateAktif ? '📸 Ambil Foto' : '📷 Buka Kamera'}</button>
-
-                    {kameraUpdateAktif && (
-                      <button onClick={tutupKameraUpdate} style={{
-                        background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
-                        borderRadius: '10px', padding: '8px 16px', fontSize: '13px',
-                        cursor: 'pointer', textAlign: 'left'
-                      }}>✕ Tutup</button>
-                    )}
-
-                    <div style={{ position: 'relative' }}>
-                      <button onClick={() => setShowKategoriUpdate(!showKategoriUpdate)} style={{
-                        background: '#fd1d00', color: '#fff', border: 'none',
-                        borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                        fontWeight: '600', cursor: 'pointer', width: '100%', textAlign: 'left'
-                      }}>Kategory ▾</button>
-                      {showKategoriUpdate && (
-                        <div style={{
-                          position: 'absolute', top: '100%', left: 0, background: '#fff',
-                          border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden',
-                          zIndex: 10, marginTop: '4px', width: '100%',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-                        }}>
-                          {['hadir', 'izin', 'sakit'].map(k => (
-                            <button key={k} onClick={() => { setKategoriUpdate(k as any); setShowKategoriUpdate(false); }} style={{
-                              display: 'block', width: '100%', padding: '10px 16px',
-                              fontSize: '13px', border: 'none',
-                              background: kategoriUpdate === k ? '#f5f5f5' : '#fff',
-                              cursor: 'pointer', textAlign: 'left',
-                            }}>{k.charAt(0).toUpperCase() + k.slice(1)}</button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    <span style={{
-  fontSize: '12px', fontWeight: '600',
-  background: kategoriUpdate === 'hadir' ? '#f0fdf4' : '#faf5ff',
-  color: kategoriUpdate === 'hadir' ? '#16a34a' : '#7e22ce',
-  padding: '4px 10px', borderRadius: '20px', textAlign: 'center'
-}}>{kategoriUpdate.toUpperCase()}</span>
-                  </div>
-
-                  <div style={{
-                    flex: 1, border: '1px solid #e5e5e5', borderRadius: '12px',
-                    overflow: 'hidden', minHeight: '220px', background: '#f5f5f5',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    {kameraUpdateAktif ? (
-                      <video ref={videoUpdateRef} autoPlay playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : fotoUpdate ? (
-                      <img src={fotoUpdate} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      <p style={{ color: '#ccc', fontSize: '13px' }}>Preview kamera</p>
-                    )}
-                  </div>
-                </div>
-
-                {msg && (
-                  <p style={{ fontSize: '13px', marginTop: '12px', color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00' }}>{msg}</p>
-                )}
-
-                {fotoUpdate && !kameraUpdateAktif && (
-                  <button onClick={() => handleEditFoto(historySekarang[0].id)} disabled={loading} style={{
-                    background: '#fd1d00', color: '#fff', border: 'none',
-                    borderRadius: '10px', padding: '12px', fontSize: '14px',
-                    fontWeight: '600', cursor: 'pointer', width: '100%', marginTop: '16px'
-                  }}>{loading ? 'Mengirim...' : 'Update Foto'}</button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        </div>
+      )}
 
       </div>
 

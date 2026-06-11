@@ -228,45 +228,6 @@ namaFoto = uploaded.secure_url;
   return NextResponse.json({ message: 'Absen berhasil' });
 }
 
-export async function PUT(req: NextRequest) {
-  const user = getUser(req);
-  if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
-  const formData = await req.formData();
-  const foto = formData.get('foto') as File;
-  const status = formData.get('status') as string;
-  const id = formData.get('id');
-
-  const [cek]: any = await db.execute(
-    'SELECT id FROM absen WHERE id = ? AND user_id = ? AND tanggal = ?',
-    [id, user.id, today]
-  );
-  if (cek.length === 0) return NextResponse.json({ message: 'Tidak bisa edit absen kemarin' }, { status: 403 });
-
-  if (foto) {
-    const bytes = await foto.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const base64 = buffer.toString('base64');
-const dataUri = `data:image/jpeg;base64,${base64}`;
-const uploaded = await cloudinary.uploader.upload(dataUri, {
-  folder: 'absensi',
-  public_id: `${user.id}_${Date.now()}`,
-});
-await db.execute(
-  'UPDATE absen SET foto = ?, status = ? WHERE id = ? AND user_id = ?',
-  [uploaded.secure_url, status, id, user.id]
-);
-  } else {
-    await db.execute(
-      'UPDATE absen SET status = ? WHERE id = ? AND user_id = ?',
-      [status, id, user.id]
-    );
-  }
-
-  return NextResponse.json({ message: 'Absen berhasil diupdate' });
-}
-
 export async function DELETE(req: NextRequest) {
   const user = getUser(req);
   if (!user || user.role !== 'bk') return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
