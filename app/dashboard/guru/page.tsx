@@ -191,7 +191,7 @@ export default function DashboardGuru() {
     {/* Card rekap — DI LUAR div tabel */}
     {rekapTotal && (
       <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px' }}>
-        <p style={{ fontWeight: '600', fontSize: '14px', color: '#fff', marginBottom: '12px', padding: '8px', borderRadius: '8px' }}>
+        <p style={{ fontWeight: '600', fontSize: '14px', color: '#000000', marginBottom: '12px', padding: '8px', borderRadius: '8px' }}>
           Rekap Total Kelas {rekapTotal.mulai_dari && `(sejak ${new Date(rekapTotal.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
