@@ -266,7 +266,7 @@ function cekWaktu() {
   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
     {rekap && (
-      <div style={{ background: '#fff', border: '1px solid #e5e5e5', padding: '16px' }}>
+      <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px' }}>
         <p style={{ fontWeight: '600', fontSize: '14px', color: '#111', marginBottom: '12px' }}>
           Rekap Kehadiran Kamu {rekap.mulai_dari && `(sejak ${new Date(rekap.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
         </p>
@@ -289,7 +289,7 @@ function cekWaktu() {
       </div>
     )}
 
-    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', overflow: 'auto' }}>
+    <div style={{ background: '#fff', border: '1px solid #e5e5e5', overflow: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
         <thead>
           <tr style={{ background: '#fd1d00' }}>

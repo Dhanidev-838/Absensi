@@ -217,7 +217,7 @@ export default function DashboardGuru() {
     )}
 
     {/* Tabel — div sendiri */}
-    <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', overflow: 'auto' }}>
+    <div style={{ background: '#fff', border: '1px solid #e5e5e5', overflow: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
         <thead>
           <tr style={{ background: '#fd1d00' }}>
@@ -446,6 +446,18 @@ export default function DashboardGuru() {
           </div>
         </div>
       )}
+
+      {showAlasanPopup && alasanPopupItem && (
+  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }} onClick={() => setShowAlasanPopup(false)}>
+    <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', width: '100%', maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+      <p style={{ fontWeight: '600', fontSize: '15px', color: '#111', marginBottom: '8px' }}>Alasan — {alasanPopupItem.nama}</p>
+      <p style={{ fontSize: '13px', color: '#555' }}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
+      <p style={{ fontSize: '13px', color: '#333', marginTop: '12px', lineHeight: '1.6' }}>{alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}</p>
+      <button onClick={() => setShowAlasanPopup(false)} style={{ marginTop: '16px', width: '100%', background: '#f5f5f5', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '13px', cursor: 'pointer', color: '#555' }}>Tutup</button>
+    </div>
+  </div>
+)}
+
     </main>
   );
 }
