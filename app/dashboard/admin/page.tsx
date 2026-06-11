@@ -70,7 +70,7 @@ function UserCard({ u }: { u: any }) {
       background: '#fff', borderRadius: '12px', border: '1px solid #e5e5e5', padding: '14px',
       display: 'flex', flexDirection: 'column', gap: '6px'
     }}>
-      {msg && <p style={{ fontSize: '12px', color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00' }}>{msg}</p>}
+      {msg && <p style={{ fontSize: '12px', color: msg.includes('berhasil') ? '#999' : '#fd1d00' }}>{msg}</p>}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <p style={{ fontWeight: '600', fontSize: '14px', color: '#111' }}>{u.nama}</p>
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
@@ -221,9 +221,9 @@ export default function DashboardAdmin() {
   }
 
   const grafikData = grafik ? [
-    { name: 'Hadir',  jumlah: Number(grafik.hadir),  fill: '#16a34a' },
-    { name: 'Izin',   jumlah: Number(grafik.izin),   fill: '#d97706' },
-    { name: 'Sakit',  jumlah: Number(grafik.sakit),  fill: '#2563eb' },
+    { name: 'Hadir',  jumlah: Number(grafik.hadir),  fill: '#000000' },
+    { name: 'Izin',   jumlah: Number(grafik.izin),   fill: '#000000' },
+    { name: 'Sakit',  jumlah: Number(grafik.sakit),  fill: '#000000' },
     { name: 'Alpha',  jumlah: Number(grafik.alpha),  fill: '#dc2626' },
   ] : [];
 
@@ -287,9 +287,9 @@ export default function DashboardAdmin() {
               {msg && (
                 <div style={{
                   background: msg.includes('berhasil') ? '#f0fdf4' : '#fff0ef',
-                  border: `1px solid ${msg.includes('berhasil') ? '#16a34a' : '#fd1d00'}`,
+                  border: `1px solid ${msg.includes('berhasil') ? '#999' : '#fd1d00'}`,
                   borderRadius: '10px', padding: '10px 12px', fontSize: '13px',
-                  color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00'
+                  color: msg.includes('berhasil') ? '#999' : '#fd1d00'
                 }}>{msg}</div>
               )}
               <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })} style={{
@@ -410,9 +410,9 @@ export default function DashboardAdmin() {
   <p style={{ fontSize: '14px', fontWeight: '600', color: '#111', marginBottom: '12px' }}>Total User Yang Sudah registrasi</p>
   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
     {[
-      { label: 'Siswa', count: totalUser.siswa, color: '#16a34a', icon: '🎓' },
-      { label: 'Guru',  count: totalUser.guru,  color: '#2563eb', icon: '🏫' },
-      { label: 'BK',    count: totalUser.bk,    color: '#7e22ce', icon: '🏢' },
+      { label: 'Siswa', count: totalUser.siswa, color: '#999', icon: '🎓' },
+      { label: 'Guru',  count: totalUser.guru,  color: '#999', icon: '🏫' },
+      { label: 'BK',    count: totalUser.bk,    color: '#999', icon: '🏢' },
     ].map(({ label, count, color, icon }) => (
       <div key={label} style={{
         background: color, borderRadius: '14px', padding: '16px 20px',
@@ -443,9 +443,9 @@ export default function DashboardAdmin() {
     {msg && (
       <div style={{
         background: msg.includes('berhasil') ? '#f0fdf4' : '#fff0ef',
-        border: `1px solid ${msg.includes('berhasil') ? '#16a34a' : '#fd1d00'}`,
+        border: `1px solid ${msg.includes('berhasil') ? '#999' : '#fd1d00'}`,
         borderRadius: '10px', padding: '10px 12px', fontSize: '13px',
-        color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00'
+        color: msg.includes('berhasil') ? '#999' : '#fd1d00'
       }}>{msg}</div>
     )}
 
@@ -458,11 +458,11 @@ export default function DashboardAdmin() {
       ) : users.map(u => <UserCard key={u.id} u={u} />)
     ) : (() => {
       const jurusanConfig = [
-        { key: 'PPLG',      label: 'PPLG',      color: '#d97706' },
-        { key: 'TJKT',      label: 'TJKT',      color: '#2563eb' },
-        { key: 'DKV',       label: 'DKV',       color: '#fd1d00' },
-        { key: 'MPLB',      label: 'MPLB',      color: '#ea580c' },
-        { key: 'PEMASARAN', label: 'Pemasaran', color: '#16a34a' },
+        { key: 'PPLG',      label: 'PPLG',      color: '#000000' },
+        { key: 'TJKT',      label: 'TJKT',      color: '#000000' },
+        { key: 'DKV',       label: 'DKV',       color: '#000000' },
+        { key: 'MPLB',      label: 'MPLB',      color: '#000000' },
+        { key: 'PEMASARAN', label: 'Pemasaran', color: '#000000' },
       ];
 
       // group by jurusan → kelas

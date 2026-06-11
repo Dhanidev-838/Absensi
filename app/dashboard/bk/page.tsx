@@ -94,11 +94,11 @@ function JejakHistory({ token, isBK = false }: { token: string; isBK?: boolean }
   }
 
   const jurusanConfig = [
-    { key: 'PPLG',      label: 'Jurusan PPLG',      color: '#f2ff00' },
-    { key: 'TJKT',      label: 'Jurusan TJKT',      color: '#00d0ff' },
-    { key: 'DKV',       label: 'Jurusan DKV',       color: '#fd1d00' },
-    { key: 'MPLB',      label: 'Jurusan MPLB',      color: '#ff9900' },
-    { key: 'PEMASARAN', label: 'Jurusan Pemasaran', color: '#ffc471' },
+    { key: 'PPLG',      label: 'Jurusan PPLG',      color: '#000000' },
+    { key: 'TJKT',      label: 'Jurusan TJKT',      color: '#000000' },
+    { key: 'DKV',       label: 'Jurusan DKV',       color: '#000000' },
+    { key: 'MPLB',      label: 'Jurusan MPLB',      color: '#000000' },
+    { key: 'PEMASARAN', label: 'Jurusan Pemasaran', color: '#000000' },
   ];
 
   const grouped: Record<string, any[]> = {};
@@ -402,15 +402,15 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
   }
 
   const jurusanConfig = [
-    { key: 'PPLG',      label: 'Jurusan PPLG',      color: '#f2ff00' },
-    { key: 'TJKT',      label: 'Jurusan TJKT',      color: '#00d0ff' },
-    { key: 'DKV',       label: 'Jurusan DKV',       color: '#fd1d00' },
-    { key: 'MPLB',      label: 'Jurusan MPLB',      color: '#ff9900' },
-    { key: 'PEMASARAN', label: 'Jurusan Pemasaran', color: '#ffc471' },
+    { key: 'PPLG',      label: 'Jurusan PPLG',      color: '#000000' },
+    { key: 'TJKT',      label: 'Jurusan TJKT',      color: '#000000' },
+    { key: 'DKV',       label: 'Jurusan DKV',       color: '#000000' },
+    { key: 'MPLB',      label: 'Jurusan MPLB',      color: '#000000' },
+    { key: 'PEMASARAN', label: 'Jurusan Pemasaran', color: '#000000' },
   ];
 
   const statusColor: Record<string, string> = {
-    pending: '#d97706', diterima: '#16a34a', ditolak: '#dc2626', diproses: '#2563eb',
+    pending: '#000000', diterima: '#000000', ditolak: '#dc2626', diproses: '#999',
   };
 
   // Group siswa by jurusan
@@ -515,9 +515,9 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
         <p style={{ fontSize: '13px', fontWeight: '600', color: '#111', minWidth: '100px' }}>{kelas}</p>
         <div style={{ display: 'flex', gap: '6px', flex: 1, flexWrap: 'wrap' }}>
           {[
-            { label: 'Hadir',  val: siswaKelas.reduce((a, s) => a + Number(s.hadir || 0), 0),  color: '#16a34a' },
-            { label: 'Izin',   val: siswaKelas.reduce((a, s) => a + Number(s.izin || 0), 0),   color: '#d97706' },
-            { label: 'Sakit',  val: siswaKelas.reduce((a, s) => a + Number(s.sakit || 0), 0),  color: '#2563eb' },
+            { label: 'Hadir',  val: siswaKelas.reduce((a, s) => a + Number(s.hadir || 0), 0),  color: '#000000' },
+            { label: 'Izin',   val: siswaKelas.reduce((a, s) => a + Number(s.izin || 0), 0),   color: '#000000' },
+            { label: 'Sakit',  val: siswaKelas.reduce((a, s) => a + Number(s.sakit || 0), 0),  color: '#000000' },
             { label: 'Alpha',  val: siswaKelas.reduce((a, s) => a + Number(s.alpha || 0), 0),  color: '#dc2626' },
           ].map(({ label: lbl, val, color: c }) => (
             <div key={lbl} style={{ background: c + '15', border: `1px solid ${c}30`, borderRadius: '8px', padding: '4px 10px', textAlign: 'center', minWidth: '45px' }}>
@@ -597,7 +597,7 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
 
                 {l.status === 'pending' && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => handleProsesMasalah(l.id, 'diproses')} style={{ flex: 1, background: '#16a34a', color: '#fff', border: 'none', borderRadius: '10px', padding: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: '600' }}>✓ Proses</button>
+                    <button onClick={() => handleProsesMasalah(l.id, 'diproses')} style={{ flex: 1, background: '#999', color: '#fff', border: 'none', borderRadius: '10px', padding: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: '600' }}>✓ Proses</button>
                     <button onClick={() => handleProsesMasalah(l.id, 'ditolak')} style={{ flex: 1, background: '#fff', color: '#dc2626', border: '1px solid #dc2626', borderRadius: '10px', padding: '8px', fontSize: '13px', cursor: 'pointer', fontWeight: '600' }}>✕ Tolak</button>
                   </div>
                 )}
@@ -647,9 +647,9 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
       return (
         <tr key={kelas} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
           <td style={{ padding: '10px 12px', fontSize: '13px', color: '#111', fontWeight: '600' }} colSpan={2}>{kelas}</td>
-          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700' }}>{totalHadir}</td>
-          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700' }}>{totalIzin}</td>
-          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700' }}>{totalSakit}</td>
+          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{totalHadir}</td>
+          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{totalIzin}</td>
+          <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{totalSakit}</td>
           <td style={{ padding: '10px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700' }}>{totalAlpha}</td>
           <td style={{ padding: '6px 8px', textAlign: 'center' }}>
             <button onClick={() => cetakExcelKelas(kelas, popupJurusan!.jurusan)} style={{
@@ -755,9 +755,9 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
             ) : siswaRekap.filter(s => s.kelas === popupKelas.kelas).map((s, i) => (
               <tr key={s.user_id} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
                 <td style={{ padding: '10px 12px', fontSize: '13px', color: '#111', fontWeight: '500' }}>{s.nama}</td>
-                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700' }}>{s.hadir || 0}</td>
-                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700' }}>{s.izin || 0}</td>
-                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700' }}>{s.sakit || 0}</td>
+                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.hadir || 0}</td>
+                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.izin || 0}</td>
+                <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.sakit || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700' }}>{s.alpha || 0}</td>
               </tr>
             ))}
