@@ -255,7 +255,7 @@ function cekWaktu() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
             { label: 'Hadir',  val: rekap.hadir,  color: '#000000' },
-            { label: 'Izin',   val: rekap.izin,   color: '#000000' },
+            { label: 'Izin1',   val: rekap.izin,   color: '#000000' },
             { label: 'Sakit',  val: rekap.sakit,  color: '#000000' },
             { label: 'Alpha',  val: rekap.alpha,  color: '#fd1d00' },
           ].map(({ label, val, color }) => (
