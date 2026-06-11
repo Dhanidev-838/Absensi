@@ -326,7 +326,7 @@ function cekWaktu() {
       </td>
       <td style={{ padding: '12px 10px', textAlign: 'center' }}>
   {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
-    <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
+   <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
   ) : <span style={{ fontSize: '12px', color: '#999' }}>-</span>}
 </td>
       <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
