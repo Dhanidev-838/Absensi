@@ -308,6 +308,7 @@ function cekWaktu() {
     <tr key={item.user_id} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
       <td style={{ padding: '12px 10px', fontSize: '13px', color: '#111', textAlign: 'center', fontWeight: '500' }}>{item.nama}</td>
       <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+        <img src={item.foto} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto', display: 'block' }} />
   {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
     <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{
       background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px',
