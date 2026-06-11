@@ -20,7 +20,7 @@ type Grafik = {
   alpha: number;
 };
 
-function UserCard({ u }: { u: any }) {
+function UserCard({ u, onRefresh }: { u: any; onRefresh: () => void }) {
   const [resetId, setResetId] = useState<number | null>(null);
   const [resetPass, setResetPass] = useState('');
   const [editNamaId, setEditNamaId] = useState<number | null>(null);
@@ -34,8 +34,8 @@ function UserCard({ u }: { u: any }) {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     const data = await res.json();
-    setMsg(data.message);
-    window.location.reload();
+    if (res.ok) onRefresh(); // ← ganti window.location.reload()
+    else alert(data.message);
   }
 
   async function handleUbahUsername() {
@@ -48,9 +48,9 @@ function UserCard({ u }: { u: any }) {
     const data = await res.json();
     setMsg(data.message);
     setEditNamaId(null);
-    window.location.reload();
+    if (res.ok) onRefresh(); // ← ganti window.location.reload()
   }
-
+  
   async function handleReset() {
     if (!resetPass) return setMsg('Password baru kosong');
     const res = await fetch('/api/admin', {
@@ -455,7 +455,7 @@ export default function DashboardAdmin() {
         <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '24px', textAlign: 'center', color: '#999', fontSize: '14px' }}>
           Belum ada akun BK
         </div>
-      ) : users.map(u => <UserCard key={u.id} u={u} />)
+      ) : users.map(u => <UserCard key={u.id} u={u} onRefresh={fetchUsers} />)
     ) : (() => {
       const jurusanConfig = [
         { key: 'PPLG',      label: 'PPLG',      color: '#000000' },
@@ -510,7 +510,7 @@ export default function DashboardAdmin() {
                 </div>
                 {/* Cards */}
                 <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {kelasByJurusan[kelas].map(u => <UserCard key={u.id} u={u} />)}
+                  {kelasByJurusan[kelas].map(u => <UserCard key={u.id} u={u} onRefresh={fetchUsers} />)}
                 </div>
               </div>
             ))}
