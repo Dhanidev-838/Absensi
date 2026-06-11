@@ -107,8 +107,8 @@ function cekWaktu() {
   }
 
   const statusColor: Record<string, string> = {
-    hadir: '#16a34a', izin: '#d97706', sakit: '#2563eb',
-    alpha: '#dc2626',
+    hadir: '#000000', izin: '#000000', sakit: '#000000',
+    alpha: '#fd1d00',
   };
 
   return (
@@ -209,7 +209,7 @@ function cekWaktu() {
                   <span style={{
   fontSize: '12px', fontWeight: '600',
   background: kategori === 'hadir' ? '#f0fdf4' : '#faf5ff',
-  color: kategori === 'hadir' ? '#16a34a' : '#7e22ce',
+  color: kategori === 'hadir' ? '#000000' : '#000000',
   padding: '4px 10px', borderRadius: '20px', textAlign: 'center'
 }}>{kategori.toUpperCase()}</span>
                 </div>
@@ -231,7 +231,7 @@ function cekWaktu() {
             )}
 
             {msg && (
-              <p style={{ fontSize: '13px', marginTop: '12px', color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00' }}>{msg}</p>
+              <p style={{ fontSize: '13px', marginTop: '12px', color: msg.includes('berhasil') ? '#000000' : '#000000' }}>{msg}</p>
             )}
 
             {foto && !kameraAktif && bisaAbsen && (
@@ -254,11 +254,10 @@ function cekWaktu() {
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {[
-            { label: 'Hadir',  val: rekap.hadir,  color: '#16a34a' },
-            { label: 'Izin',   val: rekap.izin,   color: '#d97706' },
-            { label: 'Sakit',  val: rekap.sakit,  color: '#2563eb' },
-
-            { label: 'Alpha',  val: rekap.alpha,  color: '#dc2626' },
+            { label: 'Hadir',  val: rekap.hadir,  color: '#000000' },
+            { label: 'Izin',   val: rekap.izin,   color: '#000000' },
+            { label: 'Sakit',  val: rekap.sakit,  color: '#000000' },
+            { label: 'Alpha',  val: rekap.alpha,  color: '#fd1d00' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{
               background: color + '15', border: `1px solid ${color}30`,
@@ -304,10 +303,10 @@ function cekWaktu() {
           padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600'
         }}>{item.status_hari_ini?.toUpperCase() || 'BELUM'}</span>
       </td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#16a34a', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#d97706', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#2563eb', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
+      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
+      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
+      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
+      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#fd1d00', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
     </tr>
   ))}
 </tbody>
