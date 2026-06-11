@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
+        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha,
         MIN(a.tanggal) as mulai_dari,
         MAX(a.tanggal) as terakhir
@@ -56,12 +57,12 @@ export async function GET(req: NextRequest) {
       SELECT 
         u.id as user_id, u.nama, u.kelas,
         a_today.foto,
-        a_today.alasan as alasan_hari_ini,
         a_today.status as status_hari_ini,
         a_today.created_at as waktu_absen_hari_ini,
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
+        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha
       FROM users u
       LEFT JOIN absen a ON a.user_id = u.id
@@ -89,12 +90,12 @@ export async function GET(req: NextRequest) {
     SELECT 
       u.id as user_id, u.nama, u.kelas,
       a_today.foto,
-      a_today.alasan as alasan_hari_ini,
       a_today.status as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
       SUM(a.status = 'izin')   as izin,
       SUM(a.status = 'sakit')  as sakit,
+      SUM(a.status = 'dispen') as dispen,
       SUM(a.status = 'alpha')  as alpha
     FROM users u
     LEFT JOIN absen a ON a.user_id = u.id
@@ -114,6 +115,7 @@ export async function GET(req: NextRequest) {
       SUM(status = 'hadir')  as hadir,
       SUM(status = 'izin')   as izin,
       SUM(status = 'sakit')  as sakit,
+      SUM(status = 'dispen') as dispen,
       SUM(status = 'alpha')  as alpha,
       MIN(tanggal) as mulai_dari
     FROM absen WHERE user_id = ?
@@ -141,12 +143,12 @@ const jam8Str = `${today} 08:00:00`;
       SELECT 
         u.id as user_id, u.nama, u.kelas,
         a_today.foto,
-        a_today.alasan as alasan_hari_ini,
         a_today.status as status_hari_ini,
         a_today.created_at as waktu_absen_hari_ini,
         SUM(a.status = 'hadir')  as hadir,
         SUM(a.status = 'izin')   as izin,
         SUM(a.status = 'sakit')  as sakit,
+        SUM(a.status = 'dispen') as dispen,
         SUM(a.status = 'alpha')  as alpha
       FROM users u
       LEFT JOIN absen a ON a.user_id = u.id
@@ -161,6 +163,7 @@ const jam8Str = `${today} 08:00:00`;
         SUM(status = 'hadir')  as hadir,
         SUM(status = 'izin')   as izin,
         SUM(status = 'sakit')  as sakit,
+        SUM(status = 'dispen') as dispen,
         SUM(status = 'alpha')  as alpha,
         MIN(tanggal) as mulai_dari
       FROM absen WHERE user_id = ?
@@ -209,8 +212,7 @@ export async function POST(req: NextRequest) {
 
   const formData = await req.formData();
   const foto = formData.get('foto') as File;
-const status = formData.get('status') as string || 'hadir';
-const alasan = formData.get('alasan') as string || null;
+  const status = formData.get('status') as string || 'hadir';
 
   let namaFoto = null;
   if (foto) {
@@ -225,11 +227,50 @@ const uploaded = await cloudinary.uploader.upload(dataUri, {
 namaFoto = uploaded.secure_url;
   }
   await db.execute(
-    'INSERT INTO absen (user_id, tanggal, status, foto, alasan) VALUES (?, ?, ?, ?, ?)',
-    [user.id, today, status, namaFoto, alasan]
+    'INSERT INTO absen (user_id, tanggal, status, foto) VALUES (?, ?, ?, ?)',
+    [user.id, today, status, namaFoto]
   );
 
   return NextResponse.json({ message: 'Absen berhasil' });
+}
+
+export async function PUT(req: NextRequest) {
+  const user = getUser(req);
+  if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' });
+  const formData = await req.formData();
+  const foto = formData.get('foto') as File;
+  const status = formData.get('status') as string;
+  const id = formData.get('id');
+
+  const [cek]: any = await db.execute(
+    'SELECT id FROM absen WHERE id = ? AND user_id = ? AND tanggal = ?',
+    [id, user.id, today]
+  );
+  if (cek.length === 0) return NextResponse.json({ message: 'Tidak bisa edit absen kemarin' }, { status: 403 });
+
+  if (foto) {
+    const bytes = await foto.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+    const base64 = buffer.toString('base64');
+const dataUri = `data:image/jpeg;base64,${base64}`;
+const uploaded = await cloudinary.uploader.upload(dataUri, {
+  folder: 'absensi',
+  public_id: `${user.id}_${Date.now()}`,
+});
+await db.execute(
+  'UPDATE absen SET foto = ?, status = ? WHERE id = ? AND user_id = ?',
+  [uploaded.secure_url, status, id, user.id]
+);
+  } else {
+    await db.execute(
+      'UPDATE absen SET status = ? WHERE id = ? AND user_id = ?',
+      [status, id, user.id]
+    );
+  }
+
+  return NextResponse.json({ message: 'Absen berhasil diupdate' });
 }
 
 export async function DELETE(req: NextRequest) {
