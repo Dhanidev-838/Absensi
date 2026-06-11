@@ -217,7 +217,7 @@ function cekWaktu() {
                   border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden',
                   zIndex: 10, marginTop: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
                 }}>
-                  {['hadir', 'izin', 'sakit'].map(k => (
+                  {['izin', 'sakit'].map(k => (
                     <button key={k} onClick={() => { setKategori(k as any); setShowKategori(false); }} style={{
                       display: 'block', width: '100%', padding: '10px 16px',
                       fontSize: '13px', border: 'none',
