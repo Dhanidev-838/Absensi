@@ -24,6 +24,7 @@ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' 
       u.nama,
       u.kelas,
       a_today.foto,
+      a_today.alasan as alasan_hari_ini,
       a_today.status   as status_hari_ini,
       a_today.created_at as waktu_absen_hari_ini,
       SUM(a.status = 'hadir')  as hadir,
@@ -34,7 +35,7 @@ const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Jakarta' 
     LEFT JOIN absen a       ON a.user_id = u.id
     LEFT JOIN absen a_today ON a_today.user_id = u.id AND a_today.tanggal = ?
     WHERE u.role = 'siswa' AND u.kelas = ?
-    GROUP BY u.id, u.nama, u.kelas, a_today.foto, a_today.status, a_today.created_at
+    GROUP BY u.id, u.nama, u.kelas, a_today.foto, a_today.status, a_today.created_at, a_today.alasan
     ORDER BY u.nama
   `, [today, user.kelas]);
 
