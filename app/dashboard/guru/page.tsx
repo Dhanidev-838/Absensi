@@ -13,6 +13,7 @@ type SiswaItem = {
   izin: number;
   sakit: number;
   alpha: number;
+  alasan_hari_ini: string | null;  // tambah ini
 };
 
 type LaporanItem = {
@@ -40,6 +41,8 @@ export default function DashboardGuru() {
   const [editKomentarId, setEditKomentarId] = useState<number | null>(null);
   const [editKomentarIsi, setEditKomentarIsi] = useState('');
   const [rekapTotal, setRekapTotal] = useState<any>(null);
+  const [showAlasanPopup, setShowAlasanPopup] = useState(false);
+  const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
 
   useEffect(() => {
     const t = localStorage.getItem('token') || '';
@@ -218,7 +221,7 @@ export default function DashboardGuru() {
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
         <thead>
           <tr style={{ background: '#fd1d00' }}>
-            {['Nama Siswa', 'Foto Hari Ini', 'Status Hari Ini', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+            {['Nama Siswa', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
               <th key={h} style={{
                 padding: '12px 10px', fontSize: '12px', fontWeight: '600',
                 color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
@@ -250,6 +253,11 @@ export default function DashboardGuru() {
                   padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600'
                 }}>{item.status_hari_ini?.toUpperCase() || 'BELUM'}</span>
               </td>
+              <td style={{ padding: '12px 10px', textAlign: 'center' }}>
+  {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
+    <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
+  ) : <span style={{ fontSize: '12px', color: '#999' }}>-</span>}
+</td>
               <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
               <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
               <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
