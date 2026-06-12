@@ -26,6 +26,8 @@ export default function DashboardSiswa() {
   const [alasan, setAlasan] = useState('');
   const [showAlasanPopup, setShowAlasanPopup] = useState(false);
   const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const touchStartX = useRef(0);
 
   useEffect(() => {
     const t = localStorage.getItem('token') || '';
@@ -55,6 +57,15 @@ function cekWaktu() {
     setUserName(data.nama);
     setUserKelas(data.kelas);
   }
+}
+
+function handleTouchStart(e: React.TouchEvent) {
+  touchStartX.current = e.touches[0].clientX;
+}
+
+function handleTouchEnd(e: React.TouchEvent) {
+  const diff = touchStartX.current - e.changedTouches[0].clientX;
+  if (diff > 50) setSidebarOpen(false); // geser kiri = tutup
 }
 
   async function bukakamera() {
@@ -117,44 +128,20 @@ function cekWaktu() {
 
   return (
     <main style={{ minHeight: '100vh', background: '#f5f5f5', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
-      <div style={{
-        background: '#fff', borderBottom: '1px solid #e5e5e5',
-        padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{
-            width: '36px', height: '36px', background: '#fd1d00',
-            borderRadius: '10px', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '18px'
-          }}>📋</div>
-          <div>
-            <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>Dashboard Siswa {userKelas && `- ${userKelas}`}</p>
-            <p style={{ fontSize: '12px', color: '#999' }}>{userName}</p>
-          </div>
-        </div>
-        <button onClick={handleLogout} style={{
-          background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px',
-          padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#111'
-        }}>Logout</button>
-      </div>
-
-      <div style={{
-        display: 'flex', gap: '8px', padding: '16px 24px',
-        borderBottom: '1px solid #e5e5e5', background: '#fff'
-      }}>
-        {[
-          { key: 'absen', label: '📸 Isi Absen' },
-          { key: 'sekarang', label: '📋 Ongoing Absen' },
-        ].map(t => (
-          <button key={t.key} onClick={() => { setTab(t.key as any); setMsg(''); }} style={{
-            padding: '8px 16px', borderRadius: '10px', fontSize: '13px',
-            fontWeight: tab === t.key ? '600' : '400',
-            background: tab === t.key ? '#fd1d00' : '#f5f5f5',
-            color: tab === t.key ? '#fff' : '#555',
-            border: 'none', cursor: 'pointer'
-          }}>{t.label}</button>
-        ))}
-      </div>
+      <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
+      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
+      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
+    </button>
+    <div>
+      <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>Dashboard Siswa {userKelas && `- ${userKelas}`}</p>
+      <p style={{ fontSize: '12px', color: '#999' }}>{userName}</p>
+    </div>
+  </div>
+  <button onClick={handleLogout} style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#111' }}>Logout</button>
+</div>
 
       <div style={{ padding: '24px', maxWidth: '700px', margin: '0 auto', width: '100%', flex: 1 }}>
 
@@ -352,6 +339,43 @@ function cekWaktu() {
       }}>
         2026 · NamaSekolah@gmail.com · Website Resmi Sekolah
       </footer>
+
+      {sidebarOpen && (
+  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300 }} onClick={() => setSidebarOpen(false)} />
+)}
+
+<div
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+  style={{
+    position: 'fixed', top: 0, left: 0, bottom: 0,
+    width: '240px', background: '#fff', zIndex: 400,
+    transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+    transition: 'transform 0.25s ease',
+    display: 'flex', flexDirection: 'column',
+    boxShadow: sidebarOpen ? '4px 0 20px rgba(0,0,0,0.15)' : 'none',
+  }}
+>
+  <div style={{ padding: '20px 16px', borderBottom: '1px solid #e5e5e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <p style={{ fontWeight: '700', fontSize: '14px', color: '#111' }}>Directory halaman Siswa</p>
+    <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#999' }}>✕</button>
+  </div>
+  <div style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+    {[
+      { key: 'absen', label: '📸 Isi Absen' },
+      { key: 'sekarang', label: '📋 Ongoing Absen' },
+    ].map(t => (
+      <button key={t.key} onClick={() => { setTab(t.key as any); setSidebarOpen(false); }} style={{
+        width: '100%', textAlign: 'left', padding: '10px 14px',
+        borderRadius: '10px', border: 'none', fontSize: '13px',
+        fontWeight: tab === t.key ? '600' : '400',
+        background: tab === t.key ? '#fff0ef' : 'transparent',
+        color: tab === t.key ? '#fd1d00' : '#555',
+        cursor: 'pointer'
+      }}>{t.label}</button>
+    ))}
+  </div>
+</div>
 
       {showAlasanPopup && alasanPopupItem && (
   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }} onClick={() => setShowAlasanPopup(false)}>
