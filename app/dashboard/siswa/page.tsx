@@ -1,72 +1,91 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import styles from './page.module.css';
 
+type TabKey = 'absen' | 'sekarang';
+type AttendanceCategory = 'hadir' | 'izin' | 'sakit';
 
+type Recap = {
+  mulai_dari?: string;
+  hadir?: number;
+  izin?: number;
+  sakit?: number;
+  alpha?: number;
+};
+
+type SiswaItem = {
+  user_id: string | number;
+  nama: string;
+  foto?: string;
+  status_hari_ini?: string;
+  alasan_hari_ini?: string;
+  hadir?: number;
+  izin?: number;
+  sakit?: number;
+  alpha?: number;
+};
 
 export default function DashboardSiswa() {
   const router = useRouter();
-  const [tab, setTab] = useState<'absen' | 'sekarang'>('absen');
-  const [kategori, setKategori] = useState<'hadir' | 'izin' | 'sakit'>('hadir');
+  const [tab, setTab] = useState<TabKey>('absen');
+  const [kategori, setKategori] = useState<AttendanceCategory>('hadir');
   const [showKategori, setShowKategori] = useState(false);
   const [foto, setFoto] = useState<string | null>(null);
-  const [fotoFile, setFotoFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState('');
-  const [historySekarang, setHistorySekarang] = useState<any[]>([]);
   const [bisaAbsen, setBisaAbsen] = useState(false);
   const [userName, setUserName] = useState('');
   const [userKelas, setUserKelas] = useState('');
   const [kameraAktif, setKameraAktif] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [token, setToken] = useState('');
-  const [rekap, setRekap] = useState<any>(null);
-  const [siswaList, setSiswaList] = useState<any[]>([]);
+  const tokenRef = useRef('');
+  const [rekap, setRekap] = useState<Recap | null>(null);
+  const [siswaList, setSiswaList] = useState<SiswaItem[]>([]);
   const [alasan, setAlasan] = useState('');
   const [showAlasanPopup, setShowAlasanPopup] = useState(false);
-  const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
+  const [alasanPopupItem, setAlasanPopupItem] = useState<SiswaItem | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const touchStartX = useRef(0);
 
   useEffect(() => {
     const t = localStorage.getItem('token') || '';
-    setToken(t);
+    tokenRef.current = t;
     cekWaktu();
     fetchHistory(t);
   }, []);
 
-  
-function cekWaktu() {
-  // const now = new Date();
-  // const totalMenit = now.getHours() * 60 + now.getMinutes();
-  // const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
-  // setBisaAbsen(bisaAbsen);
-  setBisaAbsen(true); // sementara testing
-}
+  function cekWaktu() {
+    // const now = new Date();
+    // const totalMenit = now.getHours() * 60 + now.getMinutes();
+    // const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
+    // setBisaAbsen(bisaAbsen);
+    setBisaAbsen(true); // sementara testing
+  }
 
   async function fetchHistory(t: string) {
-  const res = await fetch('/api/absen', {
-    headers: { Authorization: `Bearer ${t}` },
-  });
-  const data = await res.json();
-  if (res.ok) {
-    setHistorySekarang(data.hari_ini || []);
-    setSiswaList(data.siswa || []);
-    setRekap(data.rekap || null);
-    setUserName(data.nama);
-    setUserKelas(data.kelas);
+    const res = await fetch('/api/absen', {
+      headers: { Authorization: `Bearer ${t}` },
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setSiswaList(data.siswa || []);
+      setRekap(data.rekap || null);
+      setUserName(data.nama);
+      setUserKelas(data.kelas);
+    }
   }
-}
 
-function handleTouchStart(e: React.TouchEvent) {
-  touchStartX.current = e.touches[0].clientX;
-}
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
 
-function handleTouchEnd(e: React.TouchEvent) {
-  const diff = touchStartX.current - e.changedTouches[0].clientX;
-  if (diff > 50) setSidebarOpen(false); // geser kiri = tutup
-}
+  function handleTouchEnd(e: React.TouchEvent) {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) setSidebarOpen(false);
+  }
 
   async function bukakamera() {
     setKameraAktif(true);
@@ -103,7 +122,7 @@ function handleTouchEnd(e: React.TouchEvent) {
     formData.append('alasan', alasan);
     const res = await fetch('/api/absen', {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${tokenRef.current}` },
       body: formData,
     });
     const data = await res.json();
@@ -111,10 +130,9 @@ function handleTouchEnd(e: React.TouchEvent) {
     if (!res.ok) return setMsg(data.message || 'Gagal absen');
     setMsg('Absen berhasil!');
     setFoto(null);
-    fetchHistory(token);
+    fetchHistory(tokenRef.current);
     setTab('sekarang');
   }
-
 
   async function handleLogout() {
     localStorage.removeItem('token');
@@ -122,288 +140,245 @@ function handleTouchEnd(e: React.TouchEvent) {
   }
 
   const statusColor: Record<string, string> = {
-    hadir: '#000000', izin: '#000000', sakit: '#000000',
+    hadir: '#000000',
+    izin: '#000000',
+    sakit: '#000000',
     alpha: '#fd1d00',
   };
 
   return (
-    <main style={{ minHeight: '100vh', background: '#f5f5f5', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-    </button>
-    <div>
-      <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>Dashboard Siswa {userKelas && `- ${userKelas}`}</p>
-      <p style={{ fontSize: '12px', color: '#999' }}>{userName}</p>
-    </div>
-  </div>
-  <button onClick={handleLogout} style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#111' }}>Logout</button>
-</div>
-
-      <div style={{ padding: '24px', maxWidth: '700px', margin: '0 auto', width: '100%', flex: 1 }}>
-
-        {tab === 'absen' && (
-  <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #e5e5e5', padding: '24px' }}>
-    <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111', marginBottom: '4px' }}>Isi Absen Hari Ini</h2>
-    <p style={{ fontSize: '13px', color: '#999', marginBottom: '20px' }}>Batas Absen dari jam 06:00 sampai 08:00</p>
-
-    {!bisaAbsen ? (
-      <div style={{ background: '#fff0ef', border: '1px solid #fd1d00', borderRadius: '10px', padding: '12px 16px', color: '#fd1d00', fontSize: '14px' }}>
-        ⏰ Waktu absen sudah habis (06:00 - 08:00)
-      </div>
-    ) : (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-
-        {/* Preview kamera / foto */}
-        <div style={{
-          border: '1px solid #e5e5e5', borderRadius: '12px',
-          overflow: 'hidden', height: '260px', background: '#f5f5f5',
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }}>
-          {kameraAktif ? (
-            <video ref={videoRef} autoPlay playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : foto ? (
-            <img src={foto} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : (
-            <p style={{ color: '#ccc', fontSize: '13px' }}>Preview kamera</p>
-          )}
+    <main className={styles.shell}>
+      <header className={styles.topbar}>
+        <div className={styles.identity}>
+          <button
+            aria-label="Buka menu"
+            onClick={() => setSidebarOpen(true)}
+            className={styles.menuButton}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <div className={styles.titleBlock}>
+            <p className={styles.pageTitle}>Dashboard Siswa {userKelas && `- ${userKelas}`}</p>
+            <p className={styles.pageSubtitle}>{userName || 'Siswa'}</p>
+          </div>
         </div>
+        <button onClick={handleLogout} className={styles.secondaryButton}>Logout</button>
+      </header>
 
-        {/* Tombol kamera */}
-        {/* Tombol kamera */}
-<div style={{ display: 'flex', gap: '8px' }}>
-  {!foto && !kameraAktif && (
-    <button onClick={bukakamera} style={{
-      flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
-      borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-      fontWeight: '600', cursor: 'pointer'
-    }}>📷 Buka Kamera</button>
-  )}
-
-  {kameraAktif && (
-    <>
-      <button onClick={ambilFoto} style={{
-        flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
-        borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-        fontWeight: '600', cursor: 'pointer'
-      }}>📸 Ambil Foto</button>
-      <button onClick={tutupKamera} style={{
-        background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
-        borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer'
-      }}>✕ Tutup</button>
-    </>
-  )}
-
-  {foto && !kameraAktif && (
-    <button onClick={() => { setFoto(null); bukakamera(); }} style={{
-      background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
-      borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer', flex: 1
-    }}>🔄 Ambil Ulang</button>
-  )}
-</div>
-
-        {/* Setelah foto ada: muncul kategori + alasan + kirim */}
-        {foto && !kameraAktif && (
-          <>
-            {/* Dropdown Kategori */}
-            <div style={{ position: 'relative' }}>
-              <button onClick={() => setShowKategori(!showKategori)} style={{
-                width: '100%', background: '#fd1d00', color: '#fff', border: 'none',
-                borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                fontWeight: '600', cursor: 'pointer', textAlign: 'center'
-              }}>Kategori: {kategori.charAt(0).toUpperCase() + kategori.slice(1)} ▾</button>
-              {showKategori && (
-                <div style={{
-                  position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff',
-                  border: '1px solid #e5e5e5', borderRadius: '10px', overflow: 'hidden',
-                  zIndex: 10, marginTop: '4px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)'
-                }}>
-                  {['izin', 'sakit'].map(k => (
-                    <button key={k} onClick={() => { setKategori(k as any); setShowKategori(false); }} style={{
-                      display: 'block', width: '100%', padding: '10px 16px',
-                      fontSize: '13px', border: 'none',
-                      background: kategori === k ? '#f5f5f5' : '#fff',
-                      cursor: 'pointer', textAlign: 'left',
-                    }}>{k.charAt(0).toUpperCase() + k.slice(1)}</button>
-                  ))}
-                </div>
-              )}
+      <div className={styles.content}>
+        {tab === 'absen' && (
+          <section className={styles.card}>
+            <div className={styles.sectionHeader}>
+              <h2>Isi Absen Hari Ini</h2>
+              <p>Batas absen dari jam 06:00 sampai 08:00</p>
             </div>
 
-            {/* Textarea alasan kalau izin/sakit */}
-            {(kategori === 'izin' || kategori === 'sakit') && (
-              <textarea
-                placeholder={`Tulis alasan ${kategori}...`}
-                value={alasan}
-                onChange={e => setAlasan(e.target.value)}
-                rows={3}
-                style={{
-                  border: '1px solid #e5e5e5', borderRadius: '10px',
-                  padding: '10px 14px', fontSize: '13px', outline: 'none',
-                  width: '100%', resize: 'vertical', boxSizing: 'border-box'
-                }}
-              />
+            {!bisaAbsen ? (
+              <div className={styles.alert}>Waktu absen sudah habis (06:00 - 08:00)</div>
+            ) : (
+              <div className={styles.formStack}>
+                <div className={styles.previewFrame}>
+                  {kameraAktif ? (
+                    <video ref={videoRef} autoPlay playsInline className={styles.previewMedia} />
+                  ) : foto ? (
+                    <img src={foto} alt="Selfie absen" className={styles.previewMedia} />
+                  ) : (
+                    <p className={styles.previewEmpty}>Preview kamera</p>
+                  )}
+                </div>
+
+                <div className={styles.buttonRow}>
+                  {!foto && !kameraAktif && (
+                    <button onClick={bukakamera} className={styles.primaryButton}>Buka Kamera</button>
+                  )}
+
+                  {kameraAktif && (
+                    <>
+                      <button onClick={ambilFoto} className={styles.primaryButton}>Ambil Foto</button>
+                      <button onClick={tutupKamera} className={styles.ghostButton}>Tutup</button>
+                    </>
+                  )}
+
+                  {foto && !kameraAktif && (
+                    <button onClick={() => { setFoto(null); bukakamera(); }} className={styles.ghostButton}>
+                      Ambil Ulang
+                    </button>
+                  )}
+                </div>
+
+                {foto && !kameraAktif && (
+                  <>
+                    <div className={styles.dropdownWrap}>
+                      <button onClick={() => setShowKategori(!showKategori)} className={styles.primaryButton}>
+                        Kategori: {kategori.charAt(0).toUpperCase() + kategori.slice(1)}
+                      </button>
+                      {showKategori && (
+                        <div className={styles.dropdownMenu}>
+                          {['izin', 'sakit'].map(k => (
+                            <button
+                              key={k}
+                              onClick={() => { setKategori(k as AttendanceCategory); setShowKategori(false); }}
+                              className={kategori === k ? styles.dropdownItemActive : styles.dropdownItem}
+                            >
+                              {k.charAt(0).toUpperCase() + k.slice(1)}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {(kategori === 'izin' || kategori === 'sakit') && (
+                      <textarea
+                        placeholder={`Tulis alasan ${kategori}...`}
+                        value={alasan}
+                        onChange={e => setAlasan(e.target.value)}
+                        rows={3}
+                        className={styles.textarea}
+                      />
+                    )}
+
+                    <button onClick={handleAbsen} disabled={loading} className={styles.primaryButton}>
+                      {loading ? 'Mengirim...' : 'Kirim Absen'}
+                    </button>
+                  </>
+                )}
+
+                {msg && (
+                  <p className={msg.includes('berhasil') ? styles.successText : styles.errorText}>{msg}</p>
+                )}
+              </div>
             )}
-
-            {/* Kirim Absen */}
-            <button onClick={handleAbsen} disabled={loading} style={{
-              background: '#fd1d00', color: '#fff', border: 'none',
-              borderRadius: '10px', padding: '12px', fontSize: '14px',
-              fontWeight: '600', cursor: 'pointer', width: '100%'
-            }}>{loading ? 'Mengirim...' : 'Kirim Absen'}</button>
-          </>
+          </section>
         )}
-
-        {msg && (
-          <p style={{ fontSize: '13px', color: msg.includes('berhasil') ? '#16a34a' : '#fd1d00' }}>{msg}</p>
-        )}
-
-      </div>
-    )}
-  </div>
-)}
 
         {tab === 'sekarang' && (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <section className={styles.historyLayout}>
+            {rekap && (
+              <div className={styles.card}>
+                <p className={styles.cardTitle}>
+                  Rekap Kehadiran Kamu {rekap.mulai_dari && `(sejak ${new Date(rekap.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
+                </p>
+                <div className={styles.recapGrid}>
+                  {[
+                    { label: 'Hadir', val: rekap.hadir, danger: false },
+                    { label: 'Izin', val: rekap.izin, danger: false },
+                    { label: 'Sakit', val: rekap.sakit, danger: false },
+                    { label: 'Alpha', val: rekap.alpha, danger: true },
+                  ].map(({ label, val, danger }) => (
+                    <div key={label} className={danger ? styles.recapItemDanger : styles.recapItem}>
+                      <p>{val || 0}</p>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-    {rekap && (
-      <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px' }}>
-        <p style={{ fontWeight: '600', fontSize: '14px', color: '#111', marginBottom: '12px' }}>
-          Rekap Kehadiran Kamu {rekap.mulai_dari && `(sejak ${new Date(rekap.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
-        </p>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {[
-            { label: 'Hadir',  val: rekap.hadir,  color: '#000000' },
-            { label: 'Izin',   val: rekap.izin,   color: '#000000' },
-            { label: 'Sakit',  val: rekap.sakit,  color: '#000000' },
-            { label: 'Alpha',  val: rekap.alpha,  color: '#fd1d00' },
-          ].map(({ label, val, color }) => (
-            <div key={label} style={{
-              background: color + '15', border: `1px solid ${color}30`,
-              borderRadius: '10px', padding: '10px 16px', textAlign: 'center', flex: 1, minWidth: '60px'
-            }}>
-              <p style={{ fontSize: '20px', fontWeight: '700', color }}>{val || 0}</p>
-              <p style={{ fontSize: '11px', color, fontWeight: '600' }}>{label}</p>
+            <div className={styles.tableCard}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+                      <th key={h}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {siswaList.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className={styles.emptyCell}>Belum ada data</td>
+                    </tr>
+                  ) : siswaList.map((item, i) => (
+                    <tr key={item.user_id} className={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                      <td className={styles.nameCell}>{item.nama}</td>
+                      <td>
+                        {item.foto ? (
+                          <img src={item.foto} alt={`Foto ${item.nama}`} className={styles.avatar} />
+                        ) : (
+                          <span className={styles.mutedText}>-</span>
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={styles.statusBadge}
+                          style={{
+                            background: `${statusColor[item.status_hari_ini || ''] || '#888888'}20`,
+                            color: statusColor[item.status_hari_ini || ''] || '#888888',
+                          }}
+                        >
+                          {item.status_hari_ini?.toUpperCase() || 'BELUM'}
+                        </span>
+                      </td>
+                      <td>
+                        {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
+                          <button
+                            onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }}
+                            className={styles.smallButton}
+                          >
+                            Lihat
+                          </button>
+                        ) : (
+                          <span className={styles.mutedText}>-</span>
+                        )}
+                      </td>
+                      <td className={styles.countCell}>{item.hadir || 0}</td>
+                      <td className={styles.countCell}>{item.izin || 0}</td>
+                      <td className={styles.countCell}>{item.sakit || 0}</td>
+                      <td className={styles.countCellDanger}>{item.alpha || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    <div style={{ background: '#fff', border: '1px solid #e5e5e5', overflow: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
-        <thead>
-          <tr style={{ background: '#fd1d00' }}>
-            {['Nama', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
-  <th key={h} style={{
-    padding: '12px 10px', fontSize: '12px', fontWeight: '600',
-    color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
-  }}>{h}</th>
-))}
-          </tr>
-        </thead>
-        <tbody>
-  {siswaList.length === 0 ? (
-    <tr><td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#999' }}>Belum ada data</td></tr>
-  ) : siswaList.map((item, i) => (
-    <tr key={item.user_id} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-      <td style={{ padding: '12px 10px', fontSize: '13px', color: '#111', textAlign: 'center', fontWeight: '500' }}>{item.nama}</td>
-      <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-        {item.foto ? (
-          <img src={item.foto} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto', display: 'block' }} />
-          
-        ) : (
-          <span style={{ fontSize: '12px', color: '#999' }}>-</span>
+          </section>
         )}
-        
-      </td>
-    
-      <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-        <span style={{
-          background: (statusColor[item.status_hari_ini || ''] || '#888') + '20',
-          color: statusColor[item.status_hari_ini || ''] || '#888',
-          padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600'
-        }}>{item.status_hari_ini?.toUpperCase() || 'BELUM'}</span>
-      </td>
-      <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-  {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
-   <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
-  ) : <span style={{ fontSize: '12px', color: '#999' }}>-</span>}
-</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
-      <td style={{ padding: '12px 8px', textAlign: 'center', color: '#fd1d00', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
-    </tr>
-  ))}
-</tbody>
-      </table>
-    </div>
-
-
-        </div>
-      )}
-
       </div>
 
-      <footer style={{
-        background: '#fff', color: 'rgba(0,0,0,0.5)',
-        padding: '16px 32px', textAlign: 'center', fontSize: '13px',
-        borderTop: '1px solid #e5e5e5'
-      }}>
-        2026 · NamaSekolah@gmail.com · Website Resmi Sekolah
+      <footer className={styles.footer}>
+        2026 - NamaSekolah@gmail.com - Website Resmi Sekolah
       </footer>
 
       {sidebarOpen && (
-  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300 }} onClick={() => setSidebarOpen(false)} />
-)}
+        <div className={styles.backdrop} onClick={() => setSidebarOpen(false)} />
+      )}
 
-<div
-  onTouchStart={handleTouchStart}
-  onTouchEnd={handleTouchEnd}
-  style={{
-    position: 'fixed', top: 0, left: 0, bottom: 0,
-    width: '240px', background: '#fff', zIndex: 400,
-    transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-    transition: 'transform 0.25s ease',
-    display: 'flex', flexDirection: 'column',
-    boxShadow: sidebarOpen ? '4px 0 20px rgba(0,0,0,0.15)' : 'none',
-  }}
->
-  <div style={{ padding: '20px 16px', borderBottom: '1px solid #e5e5e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <p style={{ fontWeight: '700', fontSize: '14px', color: '#111' }}>Directory halaman Siswa</p>
-    <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#999' }}>✕</button>
-  </div>
-  <div style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    {[
-      { key: 'absen', label: '📸 Isi Absen' },
-      { key: 'sekarang', label: '📋 Ongoing Absen' },
-    ].map(t => (
-      <button key={t.key} onClick={() => { setTab(t.key as any); setSidebarOpen(false); }} style={{
-        width: '100%', textAlign: 'left', padding: '10px 14px',
-        borderRadius: '10px', border: 'none', fontSize: '13px',
-        fontWeight: tab === t.key ? '600' : '400',
-        background: tab === t.key ? '#fff0ef' : 'transparent',
-        color: tab === t.key ? '#fd1d00' : '#555',
-        cursor: 'pointer'
-      }}>{t.label}</button>
-    ))}
-  </div>
-</div>
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}
+      >
+        <div className={styles.sidebarHeader}>
+          <p>Direktori Halaman Siswa</p>
+          <button aria-label="Tutup menu" onClick={() => setSidebarOpen(false)} className={styles.closeButton}>x</button>
+        </div>
+        <div className={styles.navList}>
+          {[
+            { key: 'absen', label: 'Isi Absen' },
+            { key: 'sekarang', label: 'Ongoing Absen' },
+          ].map(t => (
+            <button
+              key={t.key}
+              onClick={() => { setTab(t.key as TabKey); setSidebarOpen(false); }}
+              className={tab === t.key ? styles.navItemActive : styles.navItem}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {showAlasanPopup && alasanPopupItem && (
-  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }} onClick={() => setShowAlasanPopup(false)}>
-    <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', width: '100%', maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-      <p style={{ fontWeight: '600', fontSize: '15px', color: '#111', marginBottom: '8px' }}>Alasan — {alasanPopupItem.nama}</p>
-      <p style={{ fontSize: '13px', color: '#555' }}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
-      <p style={{ fontSize: '13px', color: '#333', marginTop: '12px', lineHeight: '1.6' }}>{alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}</p>
-      <button onClick={() => setShowAlasanPopup(false)} style={{ marginTop: '16px', width: '100%', background: '#f5f5f5', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '13px', cursor: 'pointer', color: '#555' }}>Tutup</button>
-    </div>
-  </div>
-)}
+        <div className={styles.modalBackdrop} onClick={() => setShowAlasanPopup(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <p className={styles.modalTitle}>Alasan - {alasanPopupItem.nama}</p>
+            <p className={styles.modalMeta}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
+            <p className={styles.modalBody}>{alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}</p>
+            <button onClick={() => setShowAlasanPopup(false)} className={styles.ghostButton}>Tutup</button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
