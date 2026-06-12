@@ -1,6 +1,10 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import styles from './page.module.css';
+
+type TabKey = 'absen' | 'laporan';
 
 type SiswaItem = {
   user_id: number;
@@ -13,7 +17,7 @@ type SiswaItem = {
   izin: number;
   sakit: number;
   alpha: number;
-  alasan_hari_ini: string | null;  // tambah ini
+  alasan_hari_ini: string | null;
 };
 
 type LaporanItem = {
@@ -24,9 +28,24 @@ type LaporanItem = {
   created_at: string;
 };
 
+type KomentarItem = {
+  id: number;
+  nama: string;
+  isi: string;
+  created_at: string;
+};
+
+type RekapTotal = {
+  mulai_dari?: string;
+  hadir?: number;
+  izin?: number;
+  sakit?: number;
+  alpha?: number;
+};
+
 export default function DashboardGuru() {
   const router = useRouter();
-  const [tab, setTab] = useState<'absen' | 'laporan'>('absen');
+  const [tab, setTab] = useState<TabKey>('absen');
   const [absenHariIni, setAbsenHariIni] = useState<SiswaItem[]>([]);
   const [laporan, setLaporan] = useState<LaporanItem[]>([]);
   const [formLaporan, setFormLaporan] = useState({ judul: '', komentar: '' });
@@ -34,58 +53,63 @@ export default function DashboardGuru() {
   const [loading, setLoading] = useState(false);
   const [userName, setUserName] = useState('');
   const [userKelas, setUserKelas] = useState('');
-  const [token, setToken] = useState('');
   const [selectedLaporan, setSelectedLaporan] = useState<LaporanItem | null>(null);
-  const [komentarPopup, setKomentarPopup] = useState<any[]>([]);
+  const [komentarPopup, setKomentarPopup] = useState<KomentarItem[]>([]);
   const [inputBalas, setInputBalas] = useState('');
   const [editKomentarId, setEditKomentarId] = useState<number | null>(null);
   const [editKomentarIsi, setEditKomentarIsi] = useState('');
-  const [rekapTotal, setRekapTotal] = useState<any>(null);
+  const [rekapTotal, setRekapTotal] = useState<RekapTotal | null>(null);
   const [showAlasanPopup, setShowAlasanPopup] = useState(false);
-  const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
+  const [alasanPopupItem, setAlasanPopupItem] = useState<SiswaItem | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const touchStartX = useRef(0);
-
-  useEffect(() => {
-    const t = localStorage.getItem('token') || '';
-    setToken(t);
-    fetchAbsen();
-  }, []);
-
-  useEffect(() => {
-    if (tab === 'laporan') fetchLaporan();
-  }, [tab]);
 
   function getToken() {
     return localStorage.getItem('token');
   }
 
-  function handleTouchStart(e: React.TouchEvent) {
-  touchStartX.current = e.touches[0].clientX;
-}
-function handleTouchEnd(e: React.TouchEvent) {
-  const diff = touchStartX.current - e.changedTouches[0].clientX;
-  if (diff > 50) setSidebarOpen(false);
-}
+  const fetchAbsen = useCallback(async () => {
+    const res = await fetch('/api/guru/absen', {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    const data = await res.json();
+    if (!res.ok) return router.push('/login?role=guru');
+    setUserName(data.nama);
+    setUserKelas(data.kelas || '');
+    setAbsenHariIni(data.siswa || []);
+    setRekapTotal(data.rekap_total || null);
+  }, [router]);
 
-  async function fetchAbsen() {
-  const res = await fetch('/api/guru/absen', {
-    headers: { Authorization: `Bearer ${getToken()}` },
-  });
-  const data = await res.json();
-  if (!res.ok) return router.push('/login?role=guru');
-  setUserName(data.nama);
-  setUserKelas(data.kelas || '');
-  setAbsenHariIni(data.siswa || []);
-  setRekapTotal(data.rekap_total || null);
-}
-
-  async function fetchLaporan() {
+  const fetchLaporan = useCallback(async () => {
     const res = await fetch('/api/laporan/masalah', {
       headers: { Authorization: `Bearer ${getToken()}` },
     });
     const data = await res.json();
     if (res.ok) setLaporan(data.laporan);
+  }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      fetchAbsen();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [fetchAbsen]);
+
+  useEffect(() => {
+    if (tab !== 'laporan') return;
+    const timer = window.setTimeout(() => {
+      fetchLaporan();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [fetchLaporan, tab]);
+
+  function handleTouchStart(e: React.TouchEvent) {
+    touchStartX.current = e.touches[0].clientX;
+  }
+
+  function handleTouchEnd(e: React.TouchEvent) {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) setSidebarOpen(false);
   }
 
   async function fetchKomentarPopup(laporanId: number) {
@@ -132,354 +156,316 @@ function handleTouchEnd(e: React.TouchEvent) {
     fetchLaporan();
   }
 
+  async function handleKirimBalasan() {
+    if (!inputBalas || !selectedLaporan) return;
+    await fetch('/api/komentar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+      body: JSON.stringify({ laporan_id: selectedLaporan.id, isi: inputBalas }),
+    });
+    setInputBalas('');
+    fetchKomentarPopup(selectedLaporan.id);
+  }
+
   async function handleLogout() {
     localStorage.removeItem('token');
     router.push('/');
   }
 
   const statusColor: Record<string, string> = {
-    hadir: '#000000', izin: '#000000', sakit: '#000000',
-    alpha: '#dc2626',
+    hadir: '#000000',
+    izin: '#000000',
+    sakit: '#000000',
+    alpha: '#fd1d00',
   };
 
+  const today = new Date();
+
   return (
-    <main style={{ minHeight: '100vh', background: '#f5f5f5', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-    <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', flexDirection: 'column', gap: '5px' }}>
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-      <div style={{ width: '22px', height: '2px', background: '#111', borderRadius: '2px' }} />
-    </button>
-    <div>
-      <p style={{ fontSize: '15px', fontWeight: '600', color: '#111' }}>Dashboard Walas{userKelas && ` - ${userKelas}`}</p>
-      <p style={{ fontSize: '12px', color: '#999' }}>{userName}</p>
-    </div>
-  </div>
-  <button onClick={handleLogout} style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#111' }}>Logout</button>
-</div>
-
-      <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto', width: '100%', flex: 1 }}>
-
-        {tab === 'absen' && (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111' }}>Ongoing Absen Siswa</h2>
-      <div style={{ textAlign: 'right' }}>
-        <p style={{ fontSize: '13px', color: '#999' }}>
-          {new Date().toLocaleDateString('id-ID', { month: 'long' })}
-        </p>
-        <p style={{ fontSize: '13px', fontWeight: '600', color: '#111' }}>
-          {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-        </p>
-      </div>
-    </div>
-
-    {/* Card rekap — DI LUAR div tabel */}
-    {rekapTotal && (
-      <div style={{ background: '#ffffff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px' }}>
-        <p style={{ fontWeight: '600', fontSize: '14px', color: '#000000', marginBottom: '12px', padding: '8px', borderRadius: '8px' }}>
-          Rekap Total Kelas {rekapTotal.mulai_dari && `(sejak ${new Date(rekapTotal.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
-        </p>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {[
-            { label: 'Hadir',  val: rekapTotal.hadir,  color: '#000000' },
-            { label: 'Izin',   val: rekapTotal.izin,   color: '#000000' },
-            { label: 'Sakit',  val: rekapTotal.sakit,  color: '#000000' },
-            { label: 'Alpha',  val: rekapTotal.alpha,  color: '#dc2626' },
-          ].map(({ label, val, color }) => (
-            <div key={label} style={{
-              background: color + '15', border: `1px solid ${color}30`,
-              borderRadius: '10px', padding: '10px 16px', textAlign: 'center', flex: 1, minWidth: '60px'
-            }}>
-              <p style={{ fontSize: '20px', fontWeight: '700', color }}>{val || 0}</p>
-              <p style={{ fontSize: '11px', color, fontWeight: '600' }}>{label}</p>
-            </div>
-          ))}
+    <main className={styles.shell}>
+      <header className={styles.topbar}>
+        <div className={styles.identity}>
+          <button
+            aria-label="Buka menu"
+            onClick={() => setSidebarOpen(true)}
+            className={styles.menuButton}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+          <div className={styles.titleBlock}>
+            <p className={styles.pageTitle}>Dashboard Walas{userKelas && ` - ${userKelas}`}</p>
+            <p className={styles.pageSubtitle}>{userName || 'Guru'}</p>
+          </div>
         </div>
-      </div>
-    )}
+        <button onClick={handleLogout} className={styles.secondaryButton}>Logout</button>
+      </header>
 
-    {/* Tabel — div sendiri */}
-    <div style={{ background: '#fff', border: '1px solid #e5e5e5', overflow: 'auto' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
-        <thead>
-          <tr style={{ background: '#fd1d00' }}>
-            {['Nama Siswa', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
-              <th key={h} style={{
-                padding: '12px 10px', fontSize: '12px', fontWeight: '600',
-                color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)'
-              }}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {absenHariIni.length === 0 ? (
-            <tr>
-              <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#999', fontSize: '14px' }}>
-                Belum ada data siswa
-              </td>
-            </tr>
-          ) : absenHariIni.map((item, i) => (
-            <tr key={item.user_id} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-              <td style={{ padding: '12px 10px', fontSize: '13px', color: '#111', textAlign: 'center', fontWeight: '500' }}>{item.nama}</td>
-              <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                {item.foto ? (
-                  <img src={item.foto} style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', margin: '0 auto', display: 'block' }} />
-                ) : (
-                  <span style={{ fontSize: '12px', color: '#999' }}>tidak ada foto</span>
-                )}
-              </td>
-              <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-                <span style={{
-                  background: (statusColor[item.status_hari_ini || ''] || '#888') + '20',
-                  color: statusColor[item.status_hari_ini || ''] || '#888',
-                  padding: '4px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600'
-                }}>{item.status_hari_ini?.toUpperCase() || 'BELUM'}</span>
-              </td>
-              <td style={{ padding: '12px 10px', textAlign: 'center' }}>
-  {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
-    <button onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
-  ) : <span style={{ fontSize: '12px', color: '#999' }}>-</span>}
-</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.hadir || 0}</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.izin || 0}</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#000000', fontWeight: '700', fontSize: '14px' }}>{item.sakit || 0}</td>
-              <td style={{ padding: '12px 8px', textAlign: 'center', color: '#dc2626', fontWeight: '700', fontSize: '14px' }}>{item.alpha || 0}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </div>
-)}
+      <div className={styles.content}>
+        {tab === 'absen' && (
+          <section className={styles.stack}>
+            <div className={styles.pageHeader}>
+              <div>
+                <h2>Ongoing Absen Siswa</h2>
+                <p>{userKelas ? `Kelas ${userKelas}` : 'Pantau kehadiran siswa hari ini'}</p>
+              </div>
+              <div className={styles.dateBlock}>
+                <span>{today.toLocaleDateString('id-ID', { month: 'long' })}</span>
+                <strong>{today.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
+              </div>
+            </div>
 
-        {/* Laporan Masalah */}
-        {tab === 'laporan' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h2 style={{ fontSize: '16px', fontWeight: '600', color: '#111' }}>Laporan Masalah Siswa</h2>
-
-            {msg && (
-              <div style={{
-                background: msg.includes('berhasil') ? '#f0fdf4' : '#fff0ef',
-                border: `1px solid ${msg.includes('berhasil') ? '#000000' : '#fd1d00'}`,
-                borderRadius: '10px', padding: '10px 12px', fontSize: '13px',
-                color: msg.includes('berhasil') ? '#000000' : '#fd1d00'
-              }}>{msg}</div>
+            {rekapTotal && (
+              <div className={styles.card}>
+                <p className={styles.cardTitle}>
+                  Rekap Total Kelas {rekapTotal.mulai_dari && `(sejak ${new Date(rekapTotal.mulai_dari).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})`}
+                </p>
+                <div className={styles.recapGrid}>
+                  {[
+                    { label: 'Hadir', val: rekapTotal.hadir, danger: false },
+                    { label: 'Izin', val: rekapTotal.izin, danger: false },
+                    { label: 'Sakit', val: rekapTotal.sakit, danger: false },
+                    { label: 'Alpha', val: rekapTotal.alpha, danger: true },
+                  ].map(({ label, val, danger }) => (
+                    <div key={label} className={danger ? styles.recapItemDanger : styles.recapItem}>
+                      <p>{val || 0}</p>
+                      <span>{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
-            <div style={{
-              background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px',
-              display: 'flex', flexDirection: 'column', gap: '12px'
-            }}>
-              <p style={{ fontWeight: '600', fontSize: '14px', color: '#111' }}>Buat Laporan Masalah Dengan BK</p>
-              <input type="text" placeholder="Judul laporan"
-                value={formLaporan.judul}
-                onChange={e => setFormLaporan({ ...formLaporan, judul: e.target.value })}
-                style={{ border: '1px solid #e5e5e5', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
-              />
-              <textarea placeholder="Tulis komentar / laporan masalah siswa..."
-                value={formLaporan.komentar}
-                onChange={e => setFormLaporan({ ...formLaporan, komentar: e.target.value })}
-                rows={4}
-                style={{ border: '1px solid #e5e5e5', borderRadius: '10px', padding: '10px 14px', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box', resize: 'vertical' }}
-              />
-              <button onClick={handleBuatLaporan} disabled={loading} style={{
-                background: '#fd1d00', color: '#fff', border: 'none',
-                borderRadius: '10px', padding: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer'
-              }}>{loading ? 'Mengirim...' : 'Kirim ke BK'}</button>
+            <div className={styles.tableCard}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    {['Nama Siswa', 'Foto Hari Ini', 'Status Hari Ini', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+                      <th key={h}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {absenHariIni.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className={styles.emptyCell}>Belum ada data siswa</td>
+                    </tr>
+                  ) : absenHariIni.map((item, i) => (
+                    <tr key={item.user_id} className={i % 2 === 0 ? styles.tableRow : styles.tableRowAlt}>
+                      <td className={styles.nameCell}>{item.nama}</td>
+                      <td>
+                        {item.foto ? (
+                          <img src={item.foto} alt={`Foto ${item.nama}`} className={styles.avatar} />
+                        ) : (
+                          <span className={styles.mutedText}>tidak ada foto</span>
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={styles.statusBadge}
+                          style={{
+                            background: `${statusColor[item.status_hari_ini || ''] || '#888888'}20`,
+                            color: statusColor[item.status_hari_ini || ''] || '#888888',
+                          }}
+                        >
+                          {item.status_hari_ini?.toUpperCase() || 'BELUM'}
+                        </span>
+                      </td>
+                      <td>
+                        {(item.status_hari_ini === 'izin' || item.status_hari_ini === 'sakit') && item.alasan_hari_ini ? (
+                          <button
+                            onClick={() => { setAlasanPopupItem(item); setShowAlasanPopup(true); }}
+                            className={styles.smallButton}
+                          >
+                            Lihat
+                          </button>
+                        ) : (
+                          <span className={styles.mutedText}>-</span>
+                        )}
+                      </td>
+                      <td className={styles.countCell}>{item.hadir || 0}</td>
+                      <td className={styles.countCell}>{item.izin || 0}</td>
+                      <td className={styles.countCell}>{item.sakit || 0}</td>
+                      <td className={styles.countCellDanger}>{item.alpha || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
+        {tab === 'laporan' && (
+          <section className={styles.stack}>
+            <div className={styles.pageHeader}>
+              <div>
+                <h2>Laporan Masalah Siswa</h2>
+                <p>Kirim dan pantau laporan yang diteruskan ke BK</p>
+              </div>
+            </div>
+
+            {msg && (
+              <div className={msg.includes('berhasil') ? styles.successAlert : styles.alert}>{msg}</div>
+            )}
+
+            <div className={styles.card}>
+              <p className={styles.cardTitle}>Buat Laporan Masalah Dengan BK</p>
+              <div className={styles.formStack}>
+                <input
+                  type="text"
+                  placeholder="Judul laporan"
+                  value={formLaporan.judul}
+                  onChange={e => setFormLaporan({ ...formLaporan, judul: e.target.value })}
+                  className={styles.input}
+                />
+                <textarea
+                  placeholder="Tulis komentar / laporan masalah siswa..."
+                  value={formLaporan.komentar}
+                  onChange={e => setFormLaporan({ ...formLaporan, komentar: e.target.value })}
+                  rows={4}
+                  className={styles.textarea}
+                />
+                <button onClick={handleBuatLaporan} disabled={loading} className={styles.primaryButton}>
+                  {loading ? 'Mengirim...' : 'Kirim ke BK'}
+                </button>
+              </div>
             </div>
 
             {laporan.length === 0 ? (
-              <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '24px', textAlign: 'center', color: '#999', fontSize: '14px' }}>
-                Belum ada laporan
-              </div>
+              <div className={styles.emptyCard}>Belum ada laporan</div>
             ) : laporan.map(l => (
-              <div key={l.id} style={{
-                background: '#fff', borderRadius: '16px', border: '1px solid #e5e5e5', padding: '16px',
-                display: 'flex', flexDirection: 'column', gap: '8px'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <p style={{ fontWeight: '600', fontSize: '14px', color: '#111' }}>{userName}</p>
-                    <p style={{ fontSize: '13px', color: '#333', marginTop: '2px' }}>{l.judul}</p>
-                    <p style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>{l.komentar}</p>
+              <article key={l.id} className={styles.reportCard}>
+                <div className={styles.reportTop}>
+                  <div className={styles.reportText}>
+                    <p className={styles.reportAuthor}>{userName}</p>
+                    <h3>{l.judul}</h3>
+                    <p>{l.komentar}</p>
                   </div>
-                  <div style={{ textAlign: 'right', minWidth: '130px' }}>
-                    <span style={{
-                      background: l.status === 'diproses' ? '#f0fdf4' : l.status === 'ditolak' ? '#fff0ef' : '#f5f5f5',
-                      color: l.status === 'diproses' ? '#000000' : l.status === 'ditolak' ? '#fd1d00' : '#888',
-                      padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', display: 'block', marginBottom: '4px'
-                    }}>{l.status}</span>
-                    <p style={{ fontSize: '11px', color: '#bbb' }}>
-                      {new Date(l.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                    </p>
+                  <div className={styles.reportMeta}>
+                    <span className={l.status === 'ditolak' ? styles.statusPillDanger : styles.statusPill}>
+                      {l.status}
+                    </span>
+                    <p>{new Date(l.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                   </div>
                 </div>
-                <button onClick={() => { setSelectedLaporan(l); fetchKomentarPopup(l.id); }} style={{
-                  background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '10px',
-                  padding: '8px 14px', fontSize: '12px', cursor: 'pointer', color: '#555', textAlign: 'left'
-                }}>💬 Klik untuk melihat balasan dari BK</button>
-              </div>
+                <button
+                  onClick={() => { setSelectedLaporan(l); fetchKomentarPopup(l.id); }}
+                  className={styles.ghostButton}
+                >
+                  Lihat balasan dari BK
+                </button>
+              </article>
             ))}
-          </div>
+          </section>
         )}
       </div>
 
-      <footer style={{
-        background: '#fff', color: 'rgba(0,0,0,0.5)',
-        padding: '16px 32px', textAlign: 'center', fontSize: '13px',
-        borderTop: '1px solid #e5e5e5'
-      }}>
-        2026 · NamaSekolah@gmail.com · Website Resmi Sekolah
+      <footer className={styles.footer}>
+        2026 - NamaSekolah@gmail.com - Website Resmi Sekolah
       </footer>
 
-      {/* Popup Komentar */}
       {selectedLaporan && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          zIndex: 200, padding: '24px'
-        }} onClick={() => setSelectedLaporan(null)}>
-          <div style={{
-            background: '#fff', borderRadius: '20px', padding: '24px',
-            width: '100%', maxWidth: '560px', maxHeight: '85vh', overflowY: 'auto'
-          }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div>
-                <p style={{ fontWeight: '600', fontSize: '15px', color: '#111' }}>{userName}</p>
-                <p style={{ fontSize: '13px', color: '#333', marginTop: '2px' }}>{selectedLaporan.judul}</p>
-                <p style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>{selectedLaporan.komentar}</p>
+        <div className={styles.modalBackdrop} onClick={() => setSelectedLaporan(null)}>
+          <div className={styles.largeModal} onClick={e => e.stopPropagation()}>
+            <div className={styles.reportTop}>
+              <div className={styles.reportText}>
+                <p className={styles.reportAuthor}>{userName}</p>
+                <h3>{selectedLaporan.judul}</h3>
+                <p>{selectedLaporan.komentar}</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <span style={{
-                  background: selectedLaporan.status === 'diproses' ? '#f0fdf4' : '#f5f5f5',
-                  color: selectedLaporan.status === 'diproses' ? '#000000' : '#888',
-                  padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', display: 'block'
-                }}>{selectedLaporan.status}</span>
-                <p style={{ fontSize: '11px', color: '#bbb', marginTop: '4px' }}>
-                  {new Date(selectedLaporan.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
+              <div className={styles.reportMeta}>
+                <span className={styles.statusPill}>{selectedLaporan.status}</span>
+                <p>{new Date(selectedLaporan.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+            <div className={styles.commentList}>
               {komentarPopup.map(k => (
-                <div key={k.id} style={{ background: '#f0f7ff', borderRadius: '8px', padding: '10px 12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <p style={{ fontSize: '12px', fontWeight: '600', color: '#2563eb' }}>{k.nama}</p>
-                    <div style={{ display: 'flex', gap: '6px' }}>
+                <div key={k.id} className={styles.commentItem}>
+                  <div className={styles.commentHeader}>
+                    <p>{k.nama}</p>
+                    <div className={styles.commentActions}>
                       {k.nama === userName && (
                         <>
-                          <button onClick={() => { setEditKomentarId(k.id); setEditKomentarIsi(k.isi); }} style={{
-                            background: '#fd1d00', color: '#fff', border: 'none',
-                            borderRadius: '6px', padding: '3px 8px', fontSize: '11px', cursor: 'pointer'
-                          }}>Edit</button>
-                          <button onClick={() => handleHapusKomentar(k.id)} style={{
-                            background: '#fff', color: '#dc2626', border: '1px solid #dc2626',
-                            borderRadius: '6px', padding: '3px 8px', fontSize: '11px', cursor: 'pointer'
-                          }}>Hapus</button>
+                          <button onClick={() => { setEditKomentarId(k.id); setEditKomentarIsi(k.isi); }} className={styles.smallDangerButton}>Edit</button>
+                          <button onClick={() => handleHapusKomentar(k.id)} className={styles.smallButton}>Hapus</button>
                         </>
                       )}
-                      <p style={{ fontSize: '11px', color: '#bbb', whiteSpace: 'nowrap' }}>
-                        {new Date(k.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                      <span>{new Date(k.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                   </div>
                   {editKomentarId === k.id ? (
-                    <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-                      <input value={editKomentarIsi} onChange={e => setEditKomentarIsi(e.target.value)}
-                        style={{ flex: 1, border: '1px solid #e5e5e5', borderRadius: '6px', padding: '6px 10px', fontSize: '13px', outline: 'none' }} />
-                      <button onClick={() => handleEditKomentar(k.id)} style={{
-                        background: '#fd1d00', color: '#fff', border: 'none',
-                        borderRadius: '6px', padding: '6px 10px', fontSize: '12px', cursor: 'pointer'
-                      }}>Simpan</button>
+                    <div className={styles.inlineForm}>
+                      <input
+                        value={editKomentarIsi}
+                        onChange={e => setEditKomentarIsi(e.target.value)}
+                        className={styles.input}
+                      />
+                      <button onClick={() => handleEditKomentar(k.id)} className={styles.primaryButton}>Simpan</button>
                     </div>
                   ) : (
-                    <p style={{ fontSize: '13px', color: '#333', marginTop: '4px' }}>{k.isi}</p>
+                    <p className={styles.commentBody}>{k.isi}</p>
                   )}
                 </div>
               ))}
             </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input type="text" placeholder="Balas Komentar..."
+            <div className={styles.replyForm}>
+              <input
+                type="text"
+                placeholder="Balas komentar..."
                 value={inputBalas}
                 onChange={e => setInputBalas(e.target.value)}
-                style={{ flex: 1, border: '1px solid #e5e5e5', borderRadius: '10px', padding: '8px 12px', fontSize: '13px', outline: 'none' }}
+                className={styles.input}
               />
-              <button onClick={async () => {
-                if (!inputBalas) return;
-                await fetch('/api/komentar', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
-                  body: JSON.stringify({ laporan_id: selectedLaporan.id, isi: inputBalas }),
-                });
-                setInputBalas('');
-                fetchKomentarPopup(selectedLaporan.id);
-              }} style={{
-                background: '#fd1d00', color: '#fff', border: 'none',
-                borderRadius: '10px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer'
-              }}>Kirim</button>
+              <button onClick={handleKirimBalasan} className={styles.primaryButton}>Kirim</button>
             </div>
 
-            <button onClick={() => setSelectedLaporan(null)} style={{
-              marginTop: '12px', width: '100%', background: '#f5f5f5', border: 'none',
-              borderRadius: '10px', padding: '8px', fontSize: '13px', cursor: 'pointer', color: '#555'
-            }}>Tutup</button>
+            <button onClick={() => setSelectedLaporan(null)} className={styles.ghostButton}>Tutup</button>
           </div>
         </div>
       )}
 
       {showAlasanPopup && alasanPopupItem && (
-  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }} onClick={() => setShowAlasanPopup(false)}>
-    <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', width: '100%', maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
-      <p style={{ fontWeight: '600', fontSize: '15px', color: '#111', marginBottom: '8px' }}>Alasan — {alasanPopupItem.nama}</p>
-      <p style={{ fontSize: '13px', color: '#555' }}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
-      <p style={{ fontSize: '13px', color: '#333', marginTop: '12px', lineHeight: '1.6' }}>{alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}</p>
-      <button onClick={() => setShowAlasanPopup(false)} style={{ marginTop: '16px', width: '100%', background: '#f5f5f5', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '13px', cursor: 'pointer', color: '#555' }}>Tutup</button>
-    </div>
-  </div>
-)}
+        <div className={styles.modalBackdrop} onClick={() => setShowAlasanPopup(false)}>
+          <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <p className={styles.modalTitle}>Alasan - {alasanPopupItem.nama}</p>
+            <p className={styles.modalMeta}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
+            <p className={styles.modalBody}>{alasanPopupItem.alasan_hari_ini || 'Tidak ada alasan'}</p>
+            <button onClick={() => setShowAlasanPopup(false)} className={styles.ghostButton}>Tutup</button>
+          </div>
+        </div>
+      )}
 
-{sidebarOpen && (
-  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 300 }} onClick={() => setSidebarOpen(false)} />
-)}
+      {sidebarOpen && (
+        <div className={styles.backdrop} onClick={() => setSidebarOpen(false)} />
+      )}
 
-<div
-  onTouchStart={handleTouchStart}
-  onTouchEnd={handleTouchEnd}
-  style={{
-    position: 'fixed', top: 0, left: 0, bottom: 0,
-    width: '240px', background: '#fff', zIndex: 400,
-    transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-    transition: 'transform 0.25s ease',
-    display: 'flex', flexDirection: 'column',
-    boxShadow: sidebarOpen ? '4px 0 20px rgba(0,0,0,0.15)' : 'none',
-  }}
->
-  <div style={{ padding: '20px 16px', borderBottom: '1px solid #e5e5e5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-    <p style={{ fontWeight: '700', fontSize: '14px', color: '#111' }}>Directory halaman Walas</p>
-    <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '18px', cursor: 'pointer', color: '#999' }}>✕</button>
-  </div>
-  <div style={{ flex: 1, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-    {[
-      { key: 'absen', label: '📋 Ongoing Absen' },
-      { key: 'laporan', label: '💬 Laporan Masalah' },
-    ].map(t => (
-      <button key={t.key} onClick={() => { setTab(t.key as any); setSidebarOpen(false); }} style={{
-        width: '100%', textAlign: 'left', padding: '10px 14px',
-        borderRadius: '10px', border: 'none', fontSize: '13px',
-        fontWeight: tab === t.key ? '600' : '400',
-        background: tab === t.key ? '#fff0ef' : 'transparent',
-        color: tab === t.key ? '#fd1d00' : '#555',
-        cursor: 'pointer'
-      }}>{t.label}</button>
-    ))}
-  </div>
-</div>
-
+      <div
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}
+      >
+        <div className={styles.sidebarHeader}>
+          <p>Direktori Halaman Walas</p>
+          <button aria-label="Tutup menu" onClick={() => setSidebarOpen(false)} className={styles.closeButton}>x</button>
+        </div>
+        <div className={styles.navList}>
+          {[
+            { key: 'absen', label: 'Ongoing Absen' },
+            { key: 'laporan', label: 'Laporan Masalah' },
+          ].map(t => (
+            <button
+              key={t.key}
+              onClick={() => { setTab(t.key as TabKey); setSidebarOpen(false); }}
+              className={tab === t.key ? styles.navItemActive : styles.navItem}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </main>
   );
 }
