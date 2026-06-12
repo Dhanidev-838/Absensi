@@ -12,6 +12,8 @@ type SiswaRekap = {
   alpha: number;
   mulai_dari: string | null;
   terakhir: string | null;
+  status_hari_ini: string | null;
+  alasan_hari_ini: string | null;
 };
 
 type LaporanMasalah = {
@@ -171,6 +173,8 @@ export default function DashboardBK() {
   const [inputBalas, setInputBalas] = useState('');
   const [popupJurusan, setPopupJurusan] = useState<{ jurusan: string; label: string; color: string } | null>(null);
   const [popupKelas, setPopupKelas] = useState<{ kelas: string; color: string } | null>(null);
+  const [showAlasanPopup, setShowAlasanPopup] = useState(false);
+  const [alasanPopupItem, setAlasanPopupItem] = useState<any>(null);
 
   useEffect(() => {
     const t = localStorage.getItem('token') || '';
@@ -744,7 +748,7 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
           <thead>
             <tr style={{ background: popupKelas.color }}>
-              {['Nama Siswa', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
+              {['Nama Siswa', 'Status', 'Alasan', 'Hadir', 'Izin', 'Sakit', 'Alpha'].map(h => (
                 <th key={h} style={{ padding: '10px 12px', fontSize: '12px', fontWeight: '600', color: '#fff', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.2)' }}>{h}</th>
               ))}
             </tr>
@@ -754,7 +758,17 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
               <tr><td colSpan={6} style={{ padding: '24px', textAlign: 'center', color: '#999' }}>Belum ada data</td></tr>
             ) : siswaRekap.filter(s => s.kelas === popupKelas.kelas).map((s, i) => (
               <tr key={s.user_id} style={{ borderTop: '1px solid #e5e5e5', background: i % 2 === 0 ? '#fff' : '#fafafa' }}>
-                <td style={{ padding: '10px 12px', fontSize: '13px', color: '#111', fontWeight: '500' }}>{s.nama}</td>
+                 <td style={{ padding: '10px 12px', fontSize: '13px', color: '#111', fontWeight: '500' }}>{s.nama}</td>
+                 <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+  <span style={{ fontSize: '11px', fontWeight: '600', color: s.status_hari_ini === 'alpha' ? '#dc2626' : '#000' }}>
+    {s.status_hari_ini?.toUpperCase() || 'BELUM'}
+  </span>
+</td>
+                <td style={{ padding: '10px 8px', textAlign: 'center' }}>
+  {(s.status_hari_ini === 'izin' || s.status_hari_ini === 'sakit') && s.alasan_hari_ini ? (
+    <button onClick={() => { setAlasanPopupItem(s); setShowAlasanPopup(true); }} style={{ background: '#f5f5f5', border: '1px solid #e5e5e5', borderRadius: '8px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#555' }}>Lihat</button>
+  ) : <span style={{ fontSize: '12px', color: '#999' }}>-</span>}
+</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.hadir || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.izin || 0}</td>
                 <td style={{ padding: '10px 8px', textAlign: 'center', color: '#000000', fontWeight: '700' }}>{s.sakit || 0}</td>
@@ -764,6 +778,16 @@ async function cetakExcelKelas(kelas: string, jurusan: string) {
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
+)}
+{showAlasanPopup && alasanPopupItem && (
+  <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '24px' }} onClick={() => setShowAlasanPopup(false)}>
+    <div style={{ background: '#fff', borderRadius: '20px', padding: '24px', width: '100%', maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+      <p style={{ fontWeight: '600', fontSize: '15px', color: '#111', marginBottom: '8px' }}>Alasan — {alasanPopupItem.nama}</p>
+      <p style={{ fontSize: '13px', color: '#555' }}>Status: <strong>{alasanPopupItem.status_hari_ini?.toUpperCase()}</strong></p>
+      <p style={{ fontSize: '13px', color: '#333', marginTop: '12px', lineHeight: '1.6' }}>{alasanPopupItem.alasan_hari_ini}</p>
+      <button onClick={() => setShowAlasanPopup(false)} style={{ marginTop: '16px', width: '100%', background: '#f5f5f5', border: 'none', borderRadius: '10px', padding: '10px', fontSize: '13px', cursor: 'pointer', color: '#555' }}>Tutup</button>
     </div>
   </div>
 )}

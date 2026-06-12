@@ -31,19 +31,22 @@ export async function GET(req: NextRequest) {
 
     const [rekap]: any = await db.execute(`
       SELECT 
-        u.id as user_id, u.nama, u.kelas,
-        SUM(a.status = 'hadir')  as hadir,
-        SUM(a.status = 'izin')   as izin,
-        SUM(a.status = 'sakit')  as sakit,
-        SUM(a.status = 'alpha')  as alpha,
-        MIN(a.tanggal) as mulai_dari,
-        MAX(a.tanggal) as terakhir
-      FROM users u
-      LEFT JOIN absen a ON a.user_id = u.id
-      WHERE u.role = 'siswa'
-      GROUP BY u.id, u.nama, u.kelas
-      ORDER BY u.kelas, u.nama
-    `);
+  u.id as user_id, u.nama, u.kelas,
+  SUM(a.status = 'hadir')  as hadir,
+  SUM(a.status = 'izin')   as izin,
+  SUM(a.status = 'sakit')  as sakit,
+  SUM(a.status = 'alpha')  as alpha,
+  MIN(a.tanggal) as mulai_dari,
+  MAX(a.tanggal) as terakhir,
+  a_today.status as status_hari_ini,
+  a_today.alasan as alasan_hari_ini
+FROM users u
+LEFT JOIN absen a ON a.user_id = u.id
+LEFT JOIN absen a_today ON a_today.user_id = u.id AND a_today.tanggal = ?
+WHERE u.role = 'siswa'
+GROUP BY u.id, u.nama, u.kelas, a_today.status, a_today.alasan
+ORDER BY u.kelas, u.nama
+    `, [today]);
 
     return NextResponse.json({ rekap });
   }
