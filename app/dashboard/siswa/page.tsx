@@ -173,20 +173,37 @@ function handleTouchEnd(e: React.TouchEvent) {
         </div>
 
         {/* Tombol kamera */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={kameraAktif ? ambilFoto : bukakamera} style={{
-            flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
-            borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-            fontWeight: '600', cursor: 'pointer'
-          }}>{kameraAktif ? '📸 Ambil Foto' : '📷 Buka Kamera'}</button>
+        {/* Tombol kamera */}
+<div style={{ display: 'flex', gap: '8px' }}>
+  {!foto && !kameraAktif && (
+    <button onClick={bukakamera} style={{
+      flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
+      borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
+      fontWeight: '600', cursor: 'pointer'
+    }}>📷 Buka Kamera</button>
+  )}
 
-          {kameraAktif && (
-            <button onClick={tutupKamera} style={{
-              background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
-              borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer'
-            }}>✕ Tutup</button>
-          )}
-        </div>
+  {kameraAktif && (
+    <>
+      <button onClick={ambilFoto} style={{
+        flex: 1, background: '#fd1d00', color: '#fff', border: 'none',
+        borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
+        fontWeight: '600', cursor: 'pointer'
+      }}>📸 Ambil Foto</button>
+      <button onClick={tutupKamera} style={{
+        background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
+        borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer'
+      }}>✕ Tutup</button>
+    </>
+  )}
+
+  {foto && !kameraAktif && (
+    <button onClick={() => { setFoto(null); bukakamera(); }} style={{
+      background: '#f5f5f5', color: '#555', border: '1px solid #e5e5e5',
+      borderRadius: '10px', padding: '10px 16px', fontSize: '13px', cursor: 'pointer', flex: 1
+    }}>🔄 Ambil Ulang</button>
+  )}
+</div>
 
         {/* Setelah foto ada: muncul kategori + alasan + kirim */}
         {foto && !kameraAktif && (
@@ -196,7 +213,7 @@ function handleTouchEnd(e: React.TouchEvent) {
               <button onClick={() => setShowKategori(!showKategori)} style={{
                 width: '100%', background: '#fd1d00', color: '#fff', border: 'none',
                 borderRadius: '10px', padding: '10px 16px', fontSize: '13px',
-                fontWeight: '600', cursor: 'pointer', textAlign: 'left'
+                fontWeight: '600', cursor: 'pointer', textAlign: 'center'
               }}>Kategori: {kategori.charAt(0).toUpperCase() + kategori.slice(1)} ▾</button>
               {showKategori && (
                 <div style={{
