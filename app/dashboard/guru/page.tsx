@@ -160,25 +160,6 @@ function handleTouchEnd(e: React.TouchEvent) {
   <button onClick={handleLogout} style={{ background: '#fff', border: '1px solid #e5e5e5', borderRadius: '10px', padding: '8px 16px', fontSize: '13px', cursor: 'pointer', color: '#111' }}>Logout</button>
 </div>
 
-      {/* Tab */}
-      <div style={{
-        display: 'flex', gap: '8px', padding: '16px 24px',
-        borderBottom: '1px solid #e5e5e5', background: '#fff', overflowX: 'auto'
-      }}>
-        {[
-          { key: 'absen', label: '📋 Ongoing Absen' },
-          { key: 'laporan', label: '💬 Laporan Masalah' },
-        ].map(t => (
-          <button key={t.key} onClick={() => { setTab(t.key as any); setMsg(''); }} style={{
-            padding: '8px 16px', borderRadius: '10px', fontSize: '13px',
-            fontWeight: tab === t.key ? '600' : '400',
-            background: tab === t.key ? '#fd1d00' : '#f5f5f5',
-            color: tab === t.key ? '#fff' : '#555',
-            border: 'none', cursor: 'pointer', whiteSpace: 'nowrap'
-          }}>{t.label}</button>
-        ))}
-      </div>
-
       <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto', width: '100%', flex: 1 }}>
 
         {tab === 'absen' && (
