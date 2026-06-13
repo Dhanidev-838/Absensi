@@ -34,13 +34,11 @@ const flow = [
 ];
 
 const contact = [
-  {
-    label: 'Alamat Sekolah',
-    value: 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421',
-  },
   { label: 'No Telpon', value: '+62-838-7740-9984' },
   { label: 'Gmail', value: 'dhanitriadisaputra@second.com' },
 ];
+
+const schoolAddress = 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421';
 
 const mapsUrl =
   'https://www.google.com/maps/search/?api=1&query=SMK%20Citra%20Negara%20Jl.%20Raya%20Tanah%20Baru%20No.99%20Kemiri%20Jaya%20Beji%20Depok';
@@ -486,8 +484,21 @@ export default function Home() {
           grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
+        .contactLayout {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+          gap: 14px;
+          align-items: stretch;
+        }
+
+        .contactMain {
+          display: grid;
+          gap: 14px;
+          align-content: start;
+        }
+
         .contactGrid {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .infoCard,
@@ -573,19 +584,10 @@ export default function Home() {
           overflow-wrap: anywhere;
         }
 
-        .contactExtra {
-          display: grid;
-          grid-template-columns: minmax(220px, 0.7fr) minmax(320px, 420px);
-          gap: 14px;
-          margin-top: 14px;
-          align-items: start;
-        }
-
         .mapCard {
           display: flex;
           flex-direction: column;
           gap: 8px;
-          justify-self: stretch;
         }
 
         .mapImageLink {
@@ -698,7 +700,7 @@ export default function Home() {
           .flowGrid,
           .contactGrid,
           .factGrid,
-          .contactExtra {
+          .contactLayout {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
@@ -722,7 +724,7 @@ export default function Home() {
           .flowGrid,
           .contactGrid,
           .factGrid,
-          .contactExtra {
+          .contactLayout {
             grid-template-columns: 1fr;
           }
 
@@ -923,28 +925,30 @@ export default function Home() {
             <p className="eyebrow">Contact Us</p>
             <h2>Informasi sekolah dan waktu absen</h2>
           </div>
-          <div className="contactGrid">
-            {contact.map(item => (
-              <div className="contactCard box" key={item.label}>
-                <strong>{item.label}</strong>
-                {item.label === 'No Telpon' ? (
-                  <p><a href="tel:+6283877409984">{item.value}</a></p>
-                ) : item.label === 'Gmail' ? (
-                  <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
-                ) : (
-                  <p>{item.value}</p>
-                )}
+          <div className="contactLayout">
+            <div className="contactMain">
+              <div className="contactGrid">
+                {contact.map(item => (
+                  <div className="contactCard box" key={item.label}>
+                    <strong>{item.label}</strong>
+                    {item.label === 'No Telpon' ? (
+                      <p><a href="tel:+6283877409984">{item.value}</a></p>
+                    ) : (
+                      <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="contactExtra">
-            <div className="contactCard box">
-              <strong>Waktu Absen</strong>
-              <p>06:00 - 08:00</p>
+              <div className="contactCard box">
+                <strong>Waktu Absen</strong>
+                <p>06:00 - 08:00</p>
+              </div>
             </div>
+
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
+              <p>{schoolAddress}</p>
               <a className="mapImageLink" href={mapsUrl} target="_blank" rel="noreferrer" aria-label="Buka lokasi SMK Citra Negara di Google Maps">
                 <Image className="mapImage" src="/uploads/Maps.png" alt="Peta lokasi SMK Citra Negara" width={795} height={671} />
               </a>
