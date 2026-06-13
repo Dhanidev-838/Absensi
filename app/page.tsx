@@ -586,6 +586,19 @@ export default function Home() {
           gap: 8px;
         }
 
+        .mapImageLink {
+          display: block;
+          overflow: hidden;
+          border: 1px solid var(--gray-200);
+          border-radius: 8px;
+        }
+
+        .mapImage {
+          display: block;
+          width: 100%;
+          height: auto;
+        }
+
         .footer {
           border-top: 1px solid var(--gray-200);
           padding: 22px 24px;
@@ -920,6 +933,9 @@ export default function Home() {
             </div>
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
+              <a className="mapImageLink" href={mapsUrl} target="_blank" rel="noreferrer" aria-label="Buka lokasi SMK Citra Negara di Google Maps">
+                <Image className="mapImage" src="/uploads/Maps.png" alt="Peta lokasi SMK Citra Negara" width={795} height={671} />
+              </a>
               <p>
                 <a href={mapsUrl} target="_blank" rel="noreferrer">
                   Buka lokasi SMK Citra Negara di Google Maps
