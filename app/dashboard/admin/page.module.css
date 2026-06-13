@@ -1,155 +1,5 @@
-.adminShell {
-  --admin-gray-50: #f7f7f8;
-  --admin-gray-100: #eeeeef;
-  --admin-gray-200: #dedee2;
-  --admin-gray-500: #74747b;
-  --admin-white: #ffffff;
-  --admin-black: #141416;
-  --admin-red: #d81f16;
-  --admin-red-soft: #fff1f0;
-  --admin-shadow: 0 18px 45px rgba(20, 20, 22, 0.07);
-  --admin-shadow-soft: 0 10px 26px rgba(20, 20, 22, 0.05);
-
-  min-height: 100vh;
-  background:
-    linear-gradient(180deg, var(--admin-gray-100), var(--admin-gray-50) 280px),
-    var(--admin-gray-50) !important;
-  color: var(--admin-black);
-  letter-spacing: 0;
-}
-
-.adminShell * {
-  letter-spacing: 0;
-}
-
-.adminShell > div:first-of-type {
-  position: sticky;
-  top: 0;
-  z-index: 250;
-  background: rgba(255, 255, 255, 0.94) !important;
-  border-bottom: 1px solid var(--admin-gray-200) !important;
-  box-shadow: 0 1px 0 rgba(20, 20, 22, 0.02);
-  backdrop-filter: blur(14px);
-}
-
-.adminShell > div:nth-of-type(2) {
-  max-width: 980px !important;
-  padding: 28px 18px 34px !important;
-}
-
-.adminShell h2,
-.adminShell p {
-  color: var(--admin-black);
-}
-
-.adminShell h2 {
-  font-size: 17px !important;
-  line-height: 1.25;
-}
-
-.adminShell p {
-  line-height: 1.45;
-}
-
-.adminShell button,
-.adminShell input,
-.adminShell select {
-  min-height: 40px;
-  font: inherit;
-}
-
-.adminShell button {
-  border-radius: 8px !important;
-  transition:
-    transform 0.16s ease,
-    background-color 0.16s ease,
-    border-color 0.16s ease,
-    color 0.16s ease,
-    box-shadow 0.16s ease;
-}
-
-.adminShell button:hover {
-  transform: translateY(-1px);
-}
-
-.adminShell button:active {
-  transform: translateY(0);
-}
-
-.adminShell input,
-.adminShell select {
-  background: var(--admin-white) !important;
-  border: 1px solid var(--admin-gray-200) !important;
-  border-radius: 8px !important;
-  color: var(--admin-black) !important;
-}
-
-.adminShell input:focus,
-.adminShell select:focus {
-  border-color: var(--admin-black) !important;
-  box-shadow: 0 0 0 3px rgba(20, 20, 22, 0.08);
-}
-
-.adminShell [style*="background: '#fff'"],
-.adminShell [style*='background: "#fff"'],
-.adminShell [style*='background: #fff'],
-.adminShell [style*='background: rgb(255, 255, 255)'] {
-  background: var(--admin-white) !important;
-}
-
-.adminShell [style*="borderRadius: '20px'"],
-.adminShell [style*="borderRadius: '16px'"],
-.adminShell [style*="borderRadius: '14px'"],
-.adminShell [style*="borderRadius: '12px'"],
-.adminShell [style*='border-radius: 20px'],
-.adminShell [style*='border-radius: 16px'],
-.adminShell [style*='border-radius: 14px'],
-.adminShell [style*='border-radius: 12px'] {
-  border-radius: 8px !important;
-}
-
-.adminShell [style*="border: '1px solid #e5e5e5'"],
-.adminShell [style*='border: "1px solid #e5e5e5"'],
-.adminShell [style*='border: 1px solid #e5e5e5'] {
-  border-color: var(--admin-gray-200) !important;
-}
-
-.adminShell [style*="border: `2px solid"],
-.adminShell [style*='border: 2px solid'] {
-  border: 1px solid var(--admin-gray-200) !important;
-}
-
-.adminShell [style*="padding: '24px'"],
-.adminShell [style*='padding: 24px'],
-.adminShell [style*='padding: 24px;'] {
-  padding: 22px !important;
-}
-
-.adminShell [style*="background: '#fd1d00'"],
-.adminShell [style*='background: "#fd1d00"'],
-.adminShell [style*='background: #fd1d00'],
-.adminShell [style*='background: rgb(253, 29, 0)'],
-.adminShell [style*="background: '#dc2626'"],
-.adminShell [style*='background: #dc2626'],
-.adminShell [style*='background: rgb(220, 38, 38)'] {
-  background: var(--admin-red) !important;
-  color: var(--admin-white) !important;
-  box-shadow: 0 10px 22px rgba(216, 31, 22, 0.16);
-}
-
-.adminShell [style*="background: '#111'"],
-.adminShell [style*='background: "#111"'],
-.adminShell [style*='background: #111'],
-.adminShell [style*='background: rgb(17, 17, 17)'],
-.adminShell [style*='background: #000000'],
-.adminShell [style*='background: rgb(0, 0, 0)'] {
-  background: var(--admin-black) !important;
-  color: var(--admin-white) !important;
-}
-
-.adminShell [style*="background: '#f5f5f5'"],
 .adminShell [style*='background: "#f5f5f5"'],
- .adminShell [style*='background: #f5f5f5'],
+.adminShell [style*='background: #f5f5f5'],
 .adminShell [style*='background: rgb(245, 245, 245)'] {
   background: var(--admin-gray-100) !important;
   color: var(--admin-black) !important;
@@ -245,13 +95,43 @@
 @media (max-width: 640px) {
   .adminShell > div:first-of-type {
     padding: 14px 14px !important;
-    align-items: flex-start !important;
-    gap: 12px;
+    align-items: center !important;
+    gap: 10px;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .adminShell > div:first-of-type > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .adminShell > div:first-of-type > div:first-child > button {
+    flex: 0 0 auto;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 4px !important;
+  }
+
+  .adminShell > div:first-of-type > div:first-child > div {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .adminShell > div:first-of-type > div:first-child p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .adminShell > div:first-of-type > button {
-    padding: 8px 12px !important;
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 86px;
+    padding: 8px 10px !important;
     min-height: 38px;
+    white-space: nowrap;
   }
 
   .adminShell > div:nth-of-type(2) {

@@ -734,6 +734,34 @@
 @media (max-width: 760px) {
   .topbar {
     padding: 12px 14px;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+
+  .identity {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .titleBlock {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .pageTitle,
+  .pageSubtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topbar > .secondaryButton {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 86px;
+    padding: 8px 10px;
+    white-space: nowrap;
   }
 
   .content {

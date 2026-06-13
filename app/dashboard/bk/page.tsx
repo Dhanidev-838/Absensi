@@ -475,7 +475,7 @@ export default function DashboardBK() {
                       )}
                     </div>
                     <div className={styles.sectionActions}>
-                      <button onClick={() => handleResetJurusan(key)} className={styles.dangerSmallButton}>Reset</button>
+                      <button onClick={() => handleResetJurusan(key)} className={styles.dangerSmallButton}>Reset Jurusan</button>
                       <button onClick={() => cetakExcelJurusan(key)} className={styles.ghostSmallButton}>Cetak Jurusan</button>
                       <button onClick={() => setPopupJurusan({ jurusan: key, label })} className={styles.smallButton}>Lihat Detail</button>
                     </div>
