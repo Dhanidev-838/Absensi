@@ -836,7 +836,7 @@ export default function Home() {
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
               <p>
-                <a href={mapsUrl} target="_blank" rel="noreferrer">
+                <a href="https://www.google.com/maps/place/SMK+Citra+Negara" target="_blank" rel="noreferrer">
                   Buka lokasi SMK Citra Negara di Google Maps
                 </a>
               </p>
