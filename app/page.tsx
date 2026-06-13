@@ -836,8 +836,8 @@ export default function Home() {
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
               <p>
-                <a href="https://www.google.com/maps/place/SMK+Citra+Negara" target="_blank" rel="noreferrer">
-                  Buka lokasi SMK Citra Negara di Google Maps
+                <a href="https://www.google.com/maps/place/Sekolah+Menengah+Kejuruan+Citra+Negara/@-6.3804675,106.8070868,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69eeacc6e549ab:0xd6c5c8ece644d8ee!8m2!3d-6.3804675!4d106.8096617!16s%2Fg%2F1pzpz4b81?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noreferrer">
+                  https://www.google.com/maps/place/Sekolah+Menengah+Kejuruan+Citra+Negara/@-6.3804675,106.8070868,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69eeacc6e549ab:0xd6c5c8ece644d8ee!8m2!3d-6.3804675!4d106.8096617!16s%2Fg%2F1pzpz4b81?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D
                 </a>
               </p>
             </div>
