@@ -726,12 +726,10 @@ export default function Home() {
               <h2>SMK Citra Negara</h2>
             </div>
             <p className="aboutText">
-               Yayasan AT-TAQWA Kemiri Jaya dibangun pada tahun 2004 di Jl. Raya Tanah Baru No.99 Kemiri Jaya, Beji, Depok 16421.
-               Yayasan ini diprakarsai serta di miliki oleh Bpk. H. Drs. Nasan, M.M, kemudian di tahun sama sekolah SMK Citra Negara dibuka.
-               Sekolah SMK Citra Negara berdiri pada tahun 2004,pada awal berdirinya SMK Citra Negara yang berada di bawah yayasan AT-TAQWA hanya memiliki 1 program keahlian yaitu Tata Niaga (TN).
-                Kemudian pada tahun 2007 SMK Citra Negara kembali membuka program keahlian baru yaitu Teknik Komputer Jaringan (TKJ), lalu jurusan Multimedia (MM)
-              pada tahun 2011, jurusan Administrasi Perkantoran (AP) pada tahun 2015, dan yang terakhir adalah jurusan Rekayasa Perangkat Lunak (RPL) yang didirikan pada tahun yang sama dengan jurusan AP yaitu pada tahun 2015.
-               Sehingga total Program keahlian yang dimiliki SMK Citra Negara pada saat ini berjumlah 5 jurusan.
+              Yayasan AT-TAQWA Kemiri Jaya dibangun pada tahun 2004 di Jl. Raya Tanah Baru
+              No.99 Kemiri Jaya, Beji, Depok 16421. Sekolah SMK Citra Negara berdiri pada
+              tahun 2004 dan berkembang dari satu program keahlian menjadi lima jurusan yang
+              mendukung kebutuhan dunia kerja dan pendidikan vokasi.
             </p>
             <div className="factGrid">
               {schoolFacts.map(item => (
@@ -754,12 +752,8 @@ export default function Home() {
             <p className="eyebrow">Absensi Digital</p>
             <h2>Absensi lebih rapi, cepat, dan mudah dipantau</h2>
             <p>
-              Absensi Digital adalah sistem pencatatan kehadiran berbasis web yang menggantikan absensi manual dengan
-              teknologi modern. Sistem ini memungkinkan siswa melakukan absensi secara mandiri melalui perangkat masing-masing
-              dengan verifikasi foto selfie, sehingga proses pencatatan kehadiran menjadi lebih efisien, akurat, dan transparan.
-              Dengan absensi digital, data kehadiran tercatat secara otomatis dan real-time, dapat diakses kapan saja oleh guru, BK, maupun admin sekolah.
-              Sistem ini juga dilengkapi fitur laporan, rekap kehadiran, dan notifikasi otomatis untuk siswa yang tidak hadir,
-              sehingga memudahkan pihak sekolah dalam memantau dan mengelola kehadiran siswa secara menyeluruh.
+              Sistem ini membantu siswa melakukan absen harian, guru memantau kehadiran kelas,
+              BK memproses laporan, dan admin menjaga data akun tetap tertata.
             </p>
           </div>
           <div className="featureGrid">
