@@ -34,26 +34,20 @@ const flow = [
 ];
 
 const contact = [
+  {
+    label: 'Alamat Sekolah',
+    value: 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421',
+  },
   { label: 'No Telpon', value: '+62-838-7740-9984' },
   { label: 'Gmail', value: 'dhanitriadisaputra@second.com' },
 ];
 
-const schoolAddress = 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421';
-
 const mapsUrl =
   'https://www.google.com/maps/search/?api=1&query=SMK%20Citra%20Negara%20Jl.%20Raya%20Tanah%20Baru%20No.99%20Kemiri%20Jaya%20Beji%20Depok';
-
-const aboutUsContent = [
-  'Kami adalah platform absensi digital yang membantu sekolah mengelola kehadiran dengan lebih mudah, cepat, dan efisien. Sistem kami dirancang minimalis, praktis, dan dapat diakses kapan saja.',
-  'Visi kami adalah menjadi solusi absensi digital terpercaya yang memudahkan manajemen kehadiran secara modern dan efisien. Misi kami adalah menghadirkan sistem absensi yang mudah digunakan, membantu pengelolaan data kehadiran lebih cepat dan akurat, serta mendukung transformasi digital untuk perusahaan dan institusi.',
-  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis dibanding metode manual, karena kami percaya teknologi dapat meningkatkan efisiensi, kedisiplinan, dan produktivitas.',
-  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis, cepat, dan efisien dibanding metode manual. Banyak perusahaan dan institusi masih menggunakan pencatatan kehadiran secara konvensional yang memakan waktu dan rentan kesalahan. Karena itu, kami menghadirkan solusi absensi digital yang modern, mudah digunakan, dan membantu meningkatkan efisiensi serta produktivitas.',
-];
 
 export default function Home() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -100,19 +94,6 @@ export default function Home() {
 
     return () => cleanups.forEach(cleanup => cleanup());
   }, []);
-
-  useEffect(() => {
-    if (!showAbout) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setShowAbout(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showAbout]);
 
   return (
     <main className="siteShell">
@@ -198,8 +179,7 @@ export default function Home() {
           flex-wrap: wrap;
         }
 
-        .navLinks a,
-        .navLinks button {
+        .navLinks a {
           color: var(--black);
           text-decoration: none;
           font-size: 13px;
@@ -209,7 +189,6 @@ export default function Home() {
         }
 
         .navLinks a:hover,
-        .navLinks button:hover,
         .navLinks .loginLink {
           background: var(--black);
           color: var(--white);
@@ -218,9 +197,6 @@ export default function Home() {
         .navLinks .aboutButton {
           background: var(--red);
           color: var(--white);
-          border: 0;
-          cursor: pointer;
-          font-family: inherit;
         }
 
         .navLinks .aboutButton:hover {
@@ -484,21 +460,8 @@ export default function Home() {
           grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .contactLayout {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-          gap: 14px;
-          align-items: stretch;
-        }
-
-        .contactMain {
-          display: grid;
-          gap: 14px;
-          align-content: start;
-        }
-
         .contactGrid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
         .infoCard,
@@ -584,25 +547,17 @@ export default function Home() {
           overflow-wrap: anywhere;
         }
 
+        .contactExtra {
+          display: grid;
+          grid-template-columns: 0.7fr 1.3fr;
+          gap: 14px;
+          margin-top: 14px;
+        }
+
         .mapCard {
           display: flex;
           flex-direction: column;
           gap: 8px;
-        }
-
-        .mapImageLink {
-          display: block;
-          overflow: hidden;
-          border: 1px solid var(--gray-200);
-          border-radius: 8px;
-          width: min(100%, 368px);
-        }
-
-        .mapImage {
-          display: block;
-          width: 100%;
-          height: 205px;
-          object-fit: cover;
         }
 
         .footer {
@@ -612,56 +567,6 @@ export default function Home() {
           color: var(--gray-500);
           text-align: center;
           font-size: 13px;
-        }
-
-        .aboutOverlay {
-          position: fixed;
-          inset: 0;
-          z-index: 200;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          background: rgba(0, 0, 0, 0.62);
-        }
-
-        .aboutModal {
-          position: relative;
-          width: min(680px, 100%);
-          max-height: 86vh;
-          overflow-y: auto;
-          border-radius: 8px;
-          background: var(--white);
-          padding: 34px;
-          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
-        }
-
-        .aboutClose {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          border: 0;
-          background: transparent;
-          color: var(--gray-500);
-          cursor: pointer;
-          font-size: 24px;
-          font-weight: 900;
-          line-height: 1;
-        }
-
-        .aboutModal h2 {
-          margin-bottom: 18px;
-          color: var(--black);
-          font-size: 24px;
-          line-height: 1.2;
-          font-weight: 900;
-        }
-
-        .aboutModal p {
-          color: var(--gray-500);
-          font-size: 14px;
-          line-height: 1.85;
-          margin-top: 12px;
         }
 
         @media (max-width: 920px) {
@@ -680,8 +585,7 @@ export default function Home() {
             padding-bottom: 2px;
           }
 
-          .navLinks a,
-          .navLinks button {
+          .navLinks a {
             white-space: nowrap;
             padding: 8px 10px;
           }
@@ -700,7 +604,7 @@ export default function Home() {
           .flowGrid,
           .contactGrid,
           .factGrid,
-          .contactLayout {
+          .contactExtra {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
@@ -724,7 +628,7 @@ export default function Home() {
           .flowGrid,
           .contactGrid,
           .factGrid,
-          .contactLayout {
+          .contactExtra {
             grid-template-columns: 1fr;
           }
 
@@ -755,22 +659,6 @@ export default function Home() {
             width: 140px;
             height: 140px;
           }
-
-          .aboutOverlay {
-            padding: 14px;
-          }
-
-          .aboutModal {
-            padding: 28px 20px 22px;
-          }
-
-          .mapImageLink {
-            width: 100%;
-          }
-
-          .mapImage {
-            height: auto;
-          }
         }
       `}</style>
 
@@ -781,7 +669,7 @@ export default function Home() {
         </a>
         <div className="navLinks">
           <a className="loginLink" href="#login">Login</a>
-          <button className="aboutButton" type="button" onClick={() => setShowAbout(true)}>About Us</button>
+          <a className="aboutButton" href="#tentang">About Us</a>
           <a href="#tentang">Tentang Sekolah</a>
           <a href="#absensi">Absensi Digital</a>
           <a href="#jurusan">Jurusan</a>
@@ -838,10 +726,12 @@ export default function Home() {
               <h2>SMK Citra Negara</h2>
             </div>
             <p className="aboutText">
-              Yayasan AT-TAQWA Kemiri Jaya dibangun pada tahun 2004 di Jl. Raya Tanah Baru
-              No.99 Kemiri Jaya, Beji, Depok 16421. Sekolah SMK Citra Negara berdiri pada
-              tahun 2004 dan berkembang dari satu program keahlian menjadi lima jurusan yang
-              mendukung kebutuhan dunia kerja dan pendidikan vokasi.
+               Yayasan AT-TAQWA Kemiri Jaya dibangun pada tahun 2004 di Jl. Raya Tanah Baru No.99 Kemiri Jaya, Beji, Depok 16421.
+               Yayasan ini diprakarsai serta di miliki oleh Bpk. H. Drs. Nasan, M.M, kemudian di tahun sama sekolah SMK Citra Negara dibuka.
+               Sekolah SMK Citra Negara berdiri pada tahun 2004,pada awal berdirinya SMK Citra Negara yang berada di bawah yayasan AT-TAQWA hanya memiliki 1 program keahlian yaitu Tata Niaga (TN).
+                Kemudian pada tahun 2007 SMK Citra Negara kembali membuka program keahlian baru yaitu Teknik Komputer Jaringan (TKJ), lalu jurusan Multimedia (MM)
+              pada tahun 2011, jurusan Administrasi Perkantoran (AP) pada tahun 2015, dan yang terakhir adalah jurusan Rekayasa Perangkat Lunak (RPL) yang didirikan pada tahun yang sama dengan jurusan AP yaitu pada tahun 2015.
+               Sehingga total Program keahlian yang dimiliki SMK Citra Negara pada saat ini berjumlah 5 jurusan.
             </p>
             <div className="factGrid">
               {schoolFacts.map(item => (
@@ -864,8 +754,12 @@ export default function Home() {
             <p className="eyebrow">Absensi Digital</p>
             <h2>Absensi lebih rapi, cepat, dan mudah dipantau</h2>
             <p>
-              Sistem ini membantu siswa melakukan absen harian, guru memantau kehadiran kelas,
-              BK memproses laporan, dan admin menjaga data akun tetap tertata.
+              Absensi Digital adalah sistem pencatatan kehadiran berbasis web yang menggantikan absensi manual dengan
+              teknologi modern. Sistem ini memungkinkan siswa melakukan absensi secara mandiri melalui perangkat masing-masing
+              dengan verifikasi foto selfie, sehingga proses pencatatan kehadiran menjadi lebih efisien, akurat, dan transparan.
+              Dengan absensi digital, data kehadiran tercatat secara otomatis dan real-time, dapat diakses kapan saja oleh guru, BK, maupun admin sekolah.
+              Sistem ini juga dilengkapi fitur laporan, rekap kehadiran, dan notifikasi otomatis untuk siswa yang tidak hadir,
+              sehingga memudahkan pihak sekolah dalam memantau dan mengelola kehadiran siswa secara menyeluruh.
             </p>
           </div>
           <div className="featureGrid">
@@ -925,33 +819,28 @@ export default function Home() {
             <p className="eyebrow">Contact Us</p>
             <h2>Informasi sekolah dan waktu absen</h2>
           </div>
-          <div className="contactLayout">
-            <div className="contactMain">
-              <div className="contactGrid">
-                {contact.map(item => (
-                  <div className="contactCard box" key={item.label}>
-                    <strong>{item.label}</strong>
-                    {item.label === 'No Telpon' ? (
-                      <p><a href="tel:+6283877409984">{item.value}</a></p>
-                    ) : (
-                      <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
-                    )}
-                  </div>
-                ))}
+          <div className="contactGrid">
+            {contact.map(item => (
+              <div className="contactCard box" key={item.label}>
+                <strong>{item.label}</strong>
+                {item.label === 'No Telpon' ? (
+                  <p><a href="tel:+6283877409984">{item.value}</a></p>
+                ) : item.label === 'Gmail' ? (
+                  <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
+                ) : (
+                  <p>{item.value}</p>
+                )}
               </div>
+            ))}
+          </div>
 
-              <div className="contactCard box">
-                <strong>Waktu Absen</strong>
-                <p>06:00 - 08:00</p>
-              </div>
+          <div className="contactExtra">
+            <div className="contactCard box">
+              <strong>Waktu Absen</strong>
+              <p>06:00 - 08:00</p>
             </div>
-
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
-              <p>{schoolAddress}</p>
-              <a className="mapImageLink" href={mapsUrl} target="_blank" rel="noreferrer" aria-label="Buka lokasi SMK Citra Negara di Google Maps">
-                <Image className="mapImage" src="/uploads/Maps.png" alt="Peta lokasi SMK Citra Negara" width={795} height={671} />
-              </a>
               <p>
                 <a href={mapsUrl} target="_blank" rel="noreferrer">
                   Buka lokasi SMK Citra Negara di Google Maps
@@ -965,18 +854,6 @@ export default function Home() {
       <footer className="footer">
         2026 - dhanitriadisaputra@second.com - Website Resmi Sekolah
       </footer>
-
-      {showAbout && (
-        <div className="aboutOverlay" onClick={() => setShowAbout(false)} role="presentation">
-          <section className="aboutModal" role="dialog" aria-modal="true" aria-labelledby="about-title" onClick={event => event.stopPropagation()}>
-            <button className="aboutClose" type="button" aria-label="Tutup About Us" onClick={() => setShowAbout(false)}>X</button>
-            <h2 id="about-title">About Us</h2>
-            {aboutUsContent.map(paragraph => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </section>
-        </div>
-      )}
     </main>
   );
 }
