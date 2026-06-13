@@ -45,9 +45,17 @@ const contact = [
 const mapsUrl =
   'https://www.google.com/maps/search/?api=1&query=SMK%20Citra%20Negara%20Jl.%20Raya%20Tanah%20Baru%20No.99%20Kemiri%20Jaya%20Beji%20Depok';
 
+const aboutUsContent = [
+  'Kami adalah platform absensi digital yang membantu sekolah mengelola kehadiran dengan lebih mudah, cepat, dan efisien. Sistem kami dirancang minimalis, praktis, dan dapat diakses kapan saja.',
+  'Visi kami adalah menjadi solusi absensi digital terpercaya yang memudahkan manajemen kehadiran secara modern dan efisien. Misi kami adalah menghadirkan sistem absensi yang mudah digunakan, membantu pengelolaan data kehadiran lebih cepat dan akurat, serta mendukung transformasi digital untuk perusahaan dan institusi.',
+  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis dibanding metode manual, karena kami percaya teknologi dapat meningkatkan efisiensi, kedisiplinan, dan produktivitas.',
+  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis, cepat, dan efisien dibanding metode manual. Banyak perusahaan dan institusi masih menggunakan pencatatan kehadiran secara konvensional yang memakan waktu dan rentan kesalahan. Karena itu, kami menghadirkan solusi absensi digital yang modern, mudah digunakan, dan membantu meningkatkan efisiensi serta produktivitas.',
+];
+
 export default function Home() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -94,6 +102,19 @@ export default function Home() {
 
     return () => cleanups.forEach(cleanup => cleanup());
   }, []);
+
+  useEffect(() => {
+    if (!showAbout) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowAbout(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showAbout]);
 
   return (
     <main className="siteShell">
@@ -179,7 +200,8 @@ export default function Home() {
           flex-wrap: wrap;
         }
 
-        .navLinks a {
+        .navLinks a,
+        .navLinks button {
           color: var(--black);
           text-decoration: none;
           font-size: 13px;
@@ -189,7 +211,21 @@ export default function Home() {
         }
 
         .navLinks a:hover,
+        .navLinks button:hover,
         .navLinks .loginLink {
+          background: var(--black);
+          color: var(--white);
+        }
+
+        .navLinks .aboutButton {
+          background: var(--red);
+          color: var(--white);
+          border: 0;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .navLinks .aboutButton:hover {
           background: var(--black);
           color: var(--white);
         }
@@ -559,6 +595,56 @@ export default function Home() {
           font-size: 13px;
         }
 
+        .aboutOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          background: rgba(0, 0, 0, 0.62);
+        }
+
+        .aboutModal {
+          position: relative;
+          width: min(680px, 100%);
+          max-height: 86vh;
+          overflow-y: auto;
+          border-radius: 8px;
+          background: var(--white);
+          padding: 34px;
+          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+        }
+
+        .aboutClose {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          border: 0;
+          background: transparent;
+          color: var(--gray-500);
+          cursor: pointer;
+          font-size: 24px;
+          font-weight: 900;
+          line-height: 1;
+        }
+
+        .aboutModal h2 {
+          margin-bottom: 18px;
+          color: var(--black);
+          font-size: 24px;
+          line-height: 1.2;
+          font-weight: 900;
+        }
+
+        .aboutModal p {
+          color: var(--gray-500);
+          font-size: 14px;
+          line-height: 1.85;
+          margin-top: 12px;
+        }
+
         @media (max-width: 920px) {
           .nav {
             align-items: flex-start;
@@ -575,7 +661,8 @@ export default function Home() {
             padding-bottom: 2px;
           }
 
-          .navLinks a {
+          .navLinks a,
+          .navLinks button {
             white-space: nowrap;
             padding: 8px 10px;
           }
@@ -649,6 +736,14 @@ export default function Home() {
             width: 140px;
             height: 140px;
           }
+
+          .aboutOverlay {
+            padding: 14px;
+          }
+
+          .aboutModal {
+            padding: 28px 20px 22px;
+          }
         }
       `}</style>
 
@@ -659,6 +754,7 @@ export default function Home() {
         </a>
         <div className="navLinks">
           <a className="loginLink" href="#login">Login</a>
+          <button className="aboutButton" type="button" onClick={() => setShowAbout(true)}>About Us</button>
           <a href="#tentang">Tentang Sekolah</a>
           <a href="#absensi">Absensi Digital</a>
           <a href="#jurusan">Jurusan</a>
@@ -837,6 +933,18 @@ export default function Home() {
       <footer className="footer">
         2026 - dhanitriadisaputra@second.com - Website Resmi Sekolah
       </footer>
+
+      {showAbout && (
+        <div className="aboutOverlay" onClick={() => setShowAbout(false)} role="presentation">
+          <section className="aboutModal" role="dialog" aria-modal="true" aria-labelledby="about-title" onClick={event => event.stopPropagation()}>
+            <button className="aboutClose" type="button" aria-label="Tutup About Us" onClick={() => setShowAbout(false)}>X</button>
+            <h2 id="about-title">About Us</h2>
+            {aboutUsContent.map(paragraph => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </section>
+        </div>
+      )}
     </main>
   );
 }
