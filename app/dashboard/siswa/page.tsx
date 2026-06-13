@@ -58,11 +58,11 @@ export default function DashboardSiswa() {
   }, []);
 
   function cekWaktu() {
-    // const now = new Date();
-    // const totalMenit = now.getHours() * 60 + now.getMinutes();
-    // const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
-    // setBisaAbsen(bisaAbsen);
-    setBisaAbsen(true); // sementara testing
+    const now = new Date();
+    const totalMenit = now.getHours() * 60 + now.getMinutes();
+    const bisaAbsen = totalMenit >= 6 * 60 && totalMenit <= 8 * 60;
+    setBisaAbsen(bisaAbsen);
+    // setBisaAbsen(true); // sementara testing
   }
 
   async function fetchHistory(t: string) {
@@ -176,7 +176,7 @@ export default function DashboardSiswa() {
             </div>
 
             {!bisaAbsen ? (
-              <div className={styles.alert}>Waktu absen sudah habis (06:00 - 08:00)</div>
+              <div className={styles.alert}>Anda telah dinyatakan ALPHA karena Waktu absen sudah habis (06:00 - 08:00)</div>
             ) : (
               <div className={styles.formStack}>
                 <div className={styles.previewFrame}>
