@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import type { RowDataPacket } from 'mysql2/promise';
+
+type UserTotalRow = RowDataPacket & {
+  role: 'siswa' | 'guru' | 'bk';
+  total: number;
+};
 
 function getUser(req: NextRequest) {
   const auth = req.headers.get('authorization');
@@ -58,6 +64,24 @@ if (role === 'grafik') {
   `, [today]);
   return NextResponse.json({ grafik: rows[0] });
 }
+
+  if (role === 'total-user') {
+    const [rows] = await db.execute<UserTotalRow[]>(`
+      SELECT role, COUNT(*) as total
+      FROM users
+      WHERE role IN ('siswa', 'guru', 'bk')
+      GROUP BY role
+    `);
+
+    const totalUser = { siswa: 0, guru: 0, bk: 0 };
+    rows.forEach((row) => {
+      if (row.role === 'siswa' || row.role === 'guru' || row.role === 'bk') {
+        totalUser[row.role as keyof typeof totalUser] = Number(row.total);
+      }
+    });
+
+    return NextResponse.json({ totalUser });
+  }
 
   const [users]: any = await db.execute(
     'SELECT id, nama, email, password, role, kelas, created_at FROM users WHERE role = ? ORDER BY created_at DESC',

@@ -121,6 +121,8 @@ export default function DashboardAdmin() {
   const [editNamaId, setEditNamaId] = useState<number | null>(null);
   const [editNamaValue, setEditNamaValue] = useState('');
   const [totalUser, setTotalUser] = useState({ siswa: 0, guru: 0, bk: 0 });
+  const [totalUserLoading, setTotalUserLoading] = useState(true);
+  const [totalUserError, setTotalUserError] = useState('');
   const [grafikMasalah, setGrafikMasalah] = useState<any>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const touchStartX = useRef(0);
@@ -161,12 +163,37 @@ function handleTouchEnd(e: React.TouchEvent) {
 
   async function fetchTotalUser() {
   const token = localStorage.getItem('token');
-  const [s, g, b] = await Promise.all([
-    fetch('/api/admin?role=siswa', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-    fetch('/api/admin?role=guru', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-    fetch('/api/admin?role=bk', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
-  ]);
-  setTotalUser({ siswa: s.users?.length || 0, guru: g.users?.length || 0, bk: b.users?.length || 0 });
+  if (!token) {
+    setTotalUserLoading(false);
+    setTotalUserError('Sesi login tidak ditemukan');
+    router.push('/login?role=admin');
+    return;
+  }
+
+  setTotalUserLoading(true);
+  setTotalUserError('');
+
+  try {
+    const res = await fetch('/api/admin?role=total-user', {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Gagal memuat total user');
+    }
+
+    setTotalUser({
+      siswa: Number(data.totalUser?.siswa || 0),
+      guru: Number(data.totalUser?.guru || 0),
+      bk: Number(data.totalUser?.bk || 0),
+    });
+  } catch (error: unknown) {
+    setTotalUserError(error instanceof Error ? error.message : 'Gagal memuat total user');
+  } finally {
+    setTotalUserLoading(false);
+  }
 }
 
   async function handleBuat() {
@@ -183,6 +210,7 @@ function handleTouchEnd(e: React.TouchEvent) {
     if (!res.ok) return setMsg(data.message || 'Gagal buat akun');
     setMsg('Akun berhasil dibuat!');
     setForm({ nama: '', email: '', password: '', role: 'guru', kelas: '' });
+    fetchTotalUser();
   }
 
   async function handleHapusAkun(id: number) {
@@ -399,6 +427,9 @@ function handleTouchEnd(e: React.TouchEvent) {
               {/* Total User */}
 <div style={{ background: '#fff', borderRadius: '20px', border: '1px solid #e5e5e5', padding: '24px', marginTop: '20px' }}>
   <p style={{ fontSize: '14px', fontWeight: '600', color: '#111', marginBottom: '12px' }}>Total User Yang Sudah registrasi</p>
+  {totalUserError && (
+    <p style={{ fontSize: '13px', color: '#fd1d00', marginBottom: '12px' }}>{totalUserError}</p>
+  )}
   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
     {[
       { label: 'Siswa', count: totalUser.siswa, color: '#999', icon: '🎓' },
@@ -407,16 +438,17 @@ function handleTouchEnd(e: React.TouchEvent) {
     ].map(({ label, count, color, icon }) => (
       <div key={label} style={{
         background: color, borderRadius: '14px', padding: '16px 20px',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        minHeight: '96px'
       }}>
         <div>
           <p style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>{label}</p>
           <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.8)', marginTop: '2px' }}>Total :</p>
           <p style={{ fontSize: '22px', fontWeight: '700', color: '#fff', marginTop: '2px' }}>
-            {String(count).padStart(3, '0')} Akun
+            {totalUserLoading ? 'Memuat...' : `${String(count).padStart(3, '0')} Akun`}
           </p>
         </div>
-        <span style={{ fontSize: '36px', opacity: 0.9 }}>{icon}</span>
+        <span style={{ fontSize: '28px', opacity: 0.9 }}>{icon}</span>
       </div>
     ))}
   </div>

@@ -1,3 +1,14 @@
+.adminShell {
+  --admin-black: #111;
+  --admin-white: #fff;
+  --admin-gray-100: #f5f5f5;
+  --admin-gray-200: #e5e5e5;
+  --admin-gray-500: #666;
+  --admin-red: #fd1d00;
+  --admin-red-soft: #fff0ef;
+  --admin-shadow-soft: 0 10px 24px rgba(17, 17, 17, 0.06);
+}
+
 .adminShell [style*='background: "#f5f5f5"'],
 .adminShell [style*='background: #f5f5f5'],
 .adminShell [style*='background: rgb(245, 245, 245)'] {
