@@ -34,13 +34,11 @@ const flow = [
 ];
 
 const contact = [
-  {
-    label: 'Alamat Sekolah',
-    value: 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421',
-  },
   { label: 'No Telpon', value: '+62-838-7740-9984' },
   { label: 'Gmail', value: 'dhanitriadisaputra@second.com' },
 ];
+
+const schoolAddress = 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421';
 
 const mapsUrl =
   'https://www.google.com/maps/search/?api=1&query=SMK%20Citra%20Negara%20Jl.%20Raya%20Tanah%20Baru%20No.99%20Kemiri%20Jaya%20Beji%20Depok';
@@ -813,34 +811,39 @@ export default function Home() {
             <p className="eyebrow">Contact Us</p>
             <h2>Informasi sekolah dan waktu absen</h2>
           </div>
-          <div className="contactGrid">
-            {contact.map(item => (
-              <div className="contactCard box" key={item.label}>
-                <strong>{item.label}</strong>
-                {item.label === 'No Telpon' ? (
-                  <p><a href="tel:+6283877409984">{item.value}</a></p>
-                ) : item.label === 'Gmail' ? (
-                  <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
-                ) : (
-                  <p>{item.value}</p>
-                )}
+          <div className="contactLayout">
+            <div className="contactGrid">
+              {contact.map(item => (
+                <div className="contactCard box" key={item.label}>
+                  <strong>{item.label}</strong>
+                  {item.label === 'No Telpon' ? (
+                    <p><a href="tel:+6283877409984">{item.value}</a></p>
+                  ) : (
+                    <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
+                  )}
+                </div>
+              ))}
+              <div className="contactCard box">
+                <strong>Waktu Absen</strong>
+                <p>06:00 - 08:00</p>
               </div>
-            ))}
-          </div>
-
-          <div className="contactExtra">
-            <div className="contactCard box">
-              <strong>Waktu Absen</strong>
-              <p>06:00 - 08:00</p>
             </div>
+
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
+              <p>{schoolAddress}</p>
+              <Image
+                src="/uploads/Maps.png"
+                alt="Peta lokasi SMK Citra Negara"
+                width={960}
+                height={520}
+                className="mapImage"
+              />
               <p>
                 <a href={mapsUrl} target="_blank" rel="noreferrer">
                   Buka lokasi SMK Citra Negara di Google Maps
                 </a>
               </p>
-            </div>
           </div>
         </div>
       </section>
