@@ -575,15 +575,17 @@ export default function Home() {
 
         .contactExtra {
           display: grid;
-          grid-template-columns: 0.7fr 1.3fr;
+          grid-template-columns: minmax(220px, 0.7fr) minmax(320px, 420px);
           gap: 14px;
           margin-top: 14px;
+          align-items: start;
         }
 
         .mapCard {
           display: flex;
           flex-direction: column;
           gap: 8px;
+          justify-self: stretch;
         }
 
         .mapImageLink {
@@ -591,12 +593,14 @@ export default function Home() {
           overflow: hidden;
           border: 1px solid var(--gray-200);
           border-radius: 8px;
+          width: min(100%, 368px);
         }
 
         .mapImage {
           display: block;
           width: 100%;
-          height: auto;
+          height: 205px;
+          object-fit: cover;
         }
 
         .footer {
@@ -756,6 +760,14 @@ export default function Home() {
 
           .aboutModal {
             padding: 28px 20px 22px;
+          }
+
+          .mapImageLink {
+            width: 100%;
+          }
+
+          .mapImage {
+            height: auto;
           }
         }
       `}</style>
