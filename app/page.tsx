@@ -26,28 +26,26 @@ const features = [
 
 const majors = ['TJKT', 'PPLG', 'PEMASARAN', 'DKV', 'MPLB'];
 
-const flow = [
-  { step: '01', label: 'Login', desc: 'Masuk sesuai peran sebagai Siswa, Guru, BK, atau Admin.' },
-  { step: '02', label: 'Isi Status', desc: 'Siswa mengisi absen harian pada waktu yang sudah ditentukan.' },
-  { step: '03', label: 'Pantau Rekap', desc: 'Guru dan BK melihat kehadiran siswa secara cepat dan rapi.' },
-  { step: '04', label: 'Tindak Lanjut', desc: 'BK memproses laporan dan mengekspor data ketika dibutuhkan.' },
-];
-
 const contact = [
-  {
-    label: 'Alamat Sekolah',
-    value: 'Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421',
-  },
   { label: 'No Telpon', value: '+62-838-7740-9984' },
   { label: 'Gmail', value: 'dhanitriadisaputra@second.com' },
+  { label: 'Waktu Absen', value: '06:00 - 08:00' },
 ];
 
 const mapsUrl =
-  'https://www.google.com/maps/search/?api=1&query=SMK%20Citra%20Negara%20Jl.%20Raya%20Tanah%20Baru%20No.99%20Kemiri%20Jaya%20Beji%20Depok';
+  'https://www.google.com/maps/place/Sekolah+Menengah+Kejuruan+Citra+Negara/@-6.3804675,106.8070868,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69eeacc6e549ab:0xd6c5c8ece644d8ee!8m2!3d-6.3804675!4d106.8096617!16s%2Fg%2F1pzpz4b81?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D';
+
+const aboutUsText = [
+  'Kami adalah platform absensi digital yang membantu sekolah mengelola kehadiran dengan lebih mudah, cepat, dan efisien. Sistem kami dirancang minimalis, praktis, dan dapat diakses kapan saja.',
+  'Visi kami adalah menjadi solusi absensi digital terpercaya yang memudahkan manajemen kehadiran secara modern dan efisien. Misi kami adalah menghadirkan sistem absensi yang mudah digunakan, membantu pengelolaan data kehadiran lebih cepat dan akurat, serta mendukung transformasi digital untuk perusahaan dan institusi.',
+  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis dibanding metode manual, karena kami percaya teknologi dapat meningkatkan efisiensi, kedisiplinan, dan produktivitas.',
+  'Brand ini hadir dari kebutuhan akan sistem absensi yang lebih praktis, cepat, dan efisien dibanding metode manual. Banyak perusahaan dan institusi masih menggunakan pencatatan kehadiran secara konvensional yang memakan waktu dan rentan kesalahan. Karena itu, kami menghadirkan solusi absensi digital yang modern, mudah digunakan, dan membantu meningkatkan efisiensi serta produktivitas.',
+];
 
 export default function Home() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -188,6 +186,16 @@ export default function Home() {
           border-radius: 8px;
         }
 
+        .navLinks button {
+          border: 0;
+          cursor: pointer;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 800;
+          padding: 9px 12px;
+          border-radius: 8px;
+        }
+
         .navLinks a:hover,
         .navLinks .loginLink {
           background: var(--black);
@@ -202,6 +210,70 @@ export default function Home() {
         .navLinks .aboutButton:hover {
           background: var(--black);
           color: var(--white);
+        }
+
+        .aboutOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          display: grid;
+          place-items: center;
+          padding: 24px;
+          background: rgba(17, 17, 19, 0.54);
+          backdrop-filter: blur(8px);
+        }
+
+        .aboutModal {
+          width: min(760px, 100%);
+          max-height: min(82vh, 760px);
+          overflow-y: auto;
+          background: var(--white);
+          border: 1px solid var(--gray-200);
+          border-radius: 8px;
+          box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+        }
+
+        .aboutModalHeader {
+          position: sticky;
+          top: 0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          padding: 18px 22px;
+          background: rgba(255, 255, 255, 0.96);
+          border-bottom: 1px solid var(--gray-200);
+        }
+
+        .aboutModalHeader h2 {
+          font-size: 22px;
+          line-height: 1.2;
+        }
+
+        .aboutClose {
+          width: 36px;
+          height: 36px;
+          border: 0;
+          border-radius: 8px;
+          background: var(--black);
+          color: var(--white);
+          cursor: pointer;
+          font-size: 18px;
+          font-weight: 900;
+        }
+
+        .aboutModalBody {
+          padding: 22px;
+        }
+
+        .aboutModalBody p {
+          color: var(--gray-500);
+          font-size: 14px;
+          line-height: 1.9;
+        }
+
+        .aboutModalBody p + p {
+          margin-top: 14px;
         }
 
         .hero {
@@ -444,8 +516,7 @@ export default function Home() {
 
         .factGrid,
         .featureGrid,
-        .flowGrid,
-        .contactGrid {
+        .contactInfoGrid {
           display: grid;
           gap: 14px;
         }
@@ -455,17 +526,27 @@ export default function Home() {
           margin-top: 24px;
         }
 
-        .featureGrid,
-        .flowGrid {
+        .featureGrid {
           grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
-        .contactGrid {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+        .contactLayout {
+          display: grid;
+          grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+          gap: 14px;
+          align-items: stretch;
+        }
+
+        .contactInfoGrid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .contactInfoGrid .wideCard {
+          grid-column: 1 / -1;
+          min-height: 194px;
         }
 
         .infoCard,
-        .flowCard,
         .contactCard,
         .mapCard {
           background: var(--white);
@@ -475,7 +556,6 @@ export default function Home() {
         }
 
         .infoCard strong,
-        .flowCard strong,
         .contactCard strong {
           display: block;
           font-size: 13px;
@@ -483,7 +563,6 @@ export default function Home() {
         }
 
         .infoCard p,
-        .flowCard p,
         .contactCard p,
         .mapCard p {
           color: var(--gray-500);
@@ -528,17 +607,6 @@ export default function Home() {
           color: var(--gray-500);
         }
 
-        .flowCard {
-          min-height: 178px;
-        }
-
-        .flowStep {
-          color: var(--red);
-          font-size: 12px;
-          font-weight: 900;
-          margin-bottom: 22px;
-        }
-
         .contactCard a,
         .mapCard a {
           color: var(--black);
@@ -547,17 +615,30 @@ export default function Home() {
           overflow-wrap: anywhere;
         }
 
-        .contactExtra {
-          display: grid;
-          grid-template-columns: 0.7fr 1.3fr;
-          gap: 14px;
-          margin-top: 14px;
-        }
-
         .mapCard {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 14px;
+          min-height: 354px;
+        }
+
+        .mapImageWrap {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          overflow: hidden;
+          border: 1px solid var(--gray-200);
+          border-radius: 8px;
+          background: var(--gray-100);
+        }
+
+        .mapImageWrap img {
+          object-fit: cover;
+        }
+
+        .mapLink {
+          font-size: 14px;
+          line-height: 1.35;
         }
 
         .footer {
@@ -590,6 +671,11 @@ export default function Home() {
             padding: 8px 10px;
           }
 
+          .navLinks button {
+            white-space: nowrap;
+            padding: 8px 10px;
+          }
+
           .hero {
             min-height: auto;
             padding-top: 138px;
@@ -601,11 +687,13 @@ export default function Home() {
           }
 
           .featureGrid,
-          .flowGrid,
-          .contactGrid,
           .factGrid,
-          .contactExtra {
+          .contactInfoGrid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .contactLayout {
+            grid-template-columns: 1fr;
           }
 
           .logoCard {
@@ -625,11 +713,22 @@ export default function Home() {
           .heroGrid,
           .roleGrid,
           .featureGrid,
-          .flowGrid,
-          .contactGrid,
           .factGrid,
-          .contactExtra {
+          .contactInfoGrid {
             grid-template-columns: 1fr;
+          }
+
+          .aboutOverlay {
+            padding: 14px;
+          }
+
+          .aboutModalHeader,
+          .aboutModalBody {
+            padding: 16px;
+          }
+
+          .contactInfoGrid .wideCard {
+            min-height: 150px;
           }
 
           .heroActions a,
@@ -669,13 +768,33 @@ export default function Home() {
         </a>
         <div className="navLinks">
           <a className="loginLink" href="#login">Login</a>
-          <a className="aboutButton" href="#tentang">About Us</a>
+          <button className="aboutButton" type="button" onClick={() => setAboutOpen(true)}>
+            About Us
+          </button>
           <a href="#tentang">Tentang Sekolah</a>
           <a href="#absensi">Absensi Digital</a>
           <a href="#jurusan">Jurusan</a>
           <a href="#contact">Contact Us</a>
         </div>
       </nav>
+
+      {aboutOpen && (
+        <div className="aboutOverlay" role="dialog" aria-modal="true" aria-labelledby="about-us-title" onClick={() => setAboutOpen(false)}>
+          <article className="aboutModal" onClick={event => event.stopPropagation()}>
+            <header className="aboutModalHeader">
+              <h2 id="about-us-title">About Us</h2>
+              <button className="aboutClose" type="button" aria-label="Tutup About Us" onClick={() => setAboutOpen(false)}>
+                X
+              </button>
+            </header>
+            <div className="aboutModalBody">
+              {aboutUsText.map(paragraph => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </article>
+        </div>
+      )}
 
       <section id="login" className="hero">
         <video autoPlay loop muted playsInline>
@@ -789,57 +908,37 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="alur" className="section sectionAlt">
-        <div className="sectionInner">
-          <div className="sectionHead">
-            <p className="eyebrow">Cara Kerja</p>
-            <h2>Alur Penggunaan</h2>
-          </div>
-          <div className="flowGrid">
-            {flow.map(item => (
-              <div className="flowCard box" key={item.step}>
-                <p className="flowStep">{item.step}</p>
-                <strong>{item.label}</strong>
-                <p>{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="contact" className="section">
         <div className="sectionInner">
           <div className="sectionHead">
             <p className="eyebrow">Contact Us</p>
             <h2>Informasi sekolah dan waktu absen</h2>
           </div>
-          <div className="contactGrid">
-            {contact.map(item => (
-              <div className="contactCard box" key={item.label}>
-                <strong>{item.label}</strong>
-                {item.label === 'No Telpon' ? (
-                  <p><a href="tel:+6283877409984">{item.value}</a></p>
-                ) : item.label === 'Gmail' ? (
-                  <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
-                ) : (
-                  <p>{item.value}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="contactExtra">
-            <div className="contactCard box">
-              <strong>Waktu Absen</strong>
-              <p>06:00 - 08:00</p>
+          <div className="contactLayout">
+            <div className="contactInfoGrid">
+              {contact.map(item => (
+                <div className={`contactCard box ${item.label === 'Waktu Absen' ? 'wideCard' : ''}`} key={item.label}>
+                  <strong>{item.label}</strong>
+                  {item.label === 'No Telpon' ? (
+                    <p><a href="tel:+6283877409984">{item.value}</a></p>
+                  ) : item.label === 'Gmail' ? (
+                    <p><a href="mailto:dhanitriadisaputra@second.com">{item.value}</a></p>
+                  ) : (
+                    <p>{item.value}</p>
+                  )}
+                </div>
+              ))}
             </div>
+
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
-              <p>
-                <a href="https://www.google.com/maps/place/Sekolah+Menengah+Kejuruan+Citra+Negara/@-6.3804675,106.8070868,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69eeacc6e549ab:0xd6c5c8ece644d8ee!8m2!3d-6.3804675!4d106.8096617!16s%2Fg%2F1pzpz4b81?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noreferrer">
-                  https://www.google.com/maps/place/Sekolah+Menengah+Kejuruan+Citra+Negara/@-6.3804675,106.8070868,17z/data=!3m1!4b1!4m6!3m5!1s0x2e69eeacc6e549ab:0xd6c5c8ece644d8ee!8m2!3d-6.3804675!4d106.8096617!16s%2Fg%2F1pzpz4b81?entry=ttu&g_ep=EgoyMDI2MDYxMC4wIKXMDSoASAFQAw%3D%3D
-                </a>
-              </p>
+              <p>Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421</p>
+              <div className="mapImageWrap">
+                <Image src="/uploads/Maps.png" alt="Peta lokasi SMK Citra Negara" fill sizes="(max-width: 920px) 100vw, 360px" />
+              </div>
+              <a className="mapLink" href={mapsUrl} target="_blank" rel="noreferrer">
+                Buka lokasi SMK Citra Negara di Google Maps
+              </a>
             </div>
           </div>
         </div>
