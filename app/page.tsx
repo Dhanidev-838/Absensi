@@ -933,9 +933,9 @@ export default function Home() {
             <div className="mapCard box">
               <strong>Alamat Sekolah</strong>
               <p>Jl. Raya Tanah Baru No.99, Kemiri Jaya, Beji, Depok 16421</p>
-              <div className="mapImageWrap">
+              <a className="mapImageWrap" href={mapsUrl} target="_blank" rel="noreferrer" aria-label="Buka lokasi SMK Citra Negara di Google Maps">
                 <Image src="/uploads/Maps.png" alt="Peta lokasi SMK Citra Negara" fill sizes="(max-width: 920px) 100vw, 360px" />
-              </div>
+              </a>
               <a className="mapLink" href={mapsUrl} target="_blank" rel="noreferrer">
                 Buka lokasi SMK Citra Negara di Google Maps
               </a>
