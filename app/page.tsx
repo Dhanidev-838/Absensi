@@ -945,7 +945,7 @@ export default function Home() {
       </section>
 
       <footer className="footer">
-        2026 - dhanitriadisaputra@second.com - Website Resmi Sekolah
+        2026 - dhanitriadisaputrasecond@gmail.com - Website Resmi Sekolah
       </footer>
     </main>
   );
